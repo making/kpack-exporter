@@ -2,7 +2,7 @@
 docker rm -f  kind-control-plane
 set -e
 CURRENT_DIR=$(cd `dirname $0` && pwd)
-LOCAL_MANIFEST_FILE=${CURRENT_DIR}/image.yaml
+LOCAL_MANIFEST_FILE=$(echo "$(cd "$(dirname "$1")"; pwd)/$(basename "$1")")
 echo "CURRENT_DIR=${CURRENT_DIR}"
 echo "LOCAL_MANIFEST_FILE=${LOCAL_MANIFEST_FILE}"
 rm -rf /tmp/java

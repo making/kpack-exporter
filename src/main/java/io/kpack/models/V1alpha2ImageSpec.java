@@ -12,18 +12,28 @@
 
 package io.kpack.models;
 
+import java.util.Objects;
+import java.util.Arrays;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import io.kpack.models.V1alpha2ImageSpecBuild;
+import io.kpack.models.V1alpha2ImageSpecBuildServices;
+import io.kpack.models.V1alpha2ImageSpecCache;
+import io.kpack.models.V1alpha2ImageSpecSource;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-
-import com.google.gson.annotations.SerializedName;
-import io.swagger.annotations.ApiModelProperty;
 
 /**
  * V1alpha2ImageSpec
  */
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen",
-		date = "2023-03-26T09:34:39.833Z[Etc/UTC]")
+		date = "2023-03-27T06:32:24.214Z[Etc/UTC]")
 public class V1alpha2ImageSpec {
 
 	public static final String SERIALIZED_NAME_ADDITIONAL_TAGS = "additionalTags";

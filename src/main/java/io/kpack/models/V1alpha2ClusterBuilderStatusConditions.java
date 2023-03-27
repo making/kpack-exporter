@@ -24,11 +24,11 @@ import io.swagger.annotations.ApiModelProperty;
 import java.io.IOException;
 
 /**
- * V1alpha2ImageStatusConditions
+ * V1alpha2ClusterBuilderStatusConditions
  */
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen",
-		date = "2023-03-27T06:32:24.214Z[Etc/UTC]")
-public class V1alpha2ImageStatusConditions {
+		date = "2023-03-27T06:34:57.887Z[Etc/UTC]")
+public class V1alpha2ClusterBuilderStatusConditions {
 
 	public static final String SERIALIZED_NAME_LAST_TRANSITION_TIME = "lastTransitionTime";
 
@@ -45,7 +45,7 @@ public class V1alpha2ImageStatusConditions {
 	@SerializedName(SERIALIZED_NAME_TYPE)
 	private String type;
 
-	public V1alpha2ImageStatusConditions lastTransitionTime(String lastTransitionTime) {
+	public V1alpha2ClusterBuilderStatusConditions lastTransitionTime(String lastTransitionTime) {
 
 		this.lastTransitionTime = lastTransitionTime;
 		return this;
@@ -66,7 +66,7 @@ public class V1alpha2ImageStatusConditions {
 		this.lastTransitionTime = lastTransitionTime;
 	}
 
-	public V1alpha2ImageStatusConditions status(String status) {
+	public V1alpha2ClusterBuilderStatusConditions status(String status) {
 
 		this.status = status;
 		return this;
@@ -87,7 +87,7 @@ public class V1alpha2ImageStatusConditions {
 		this.status = status;
 	}
 
-	public V1alpha2ImageStatusConditions type(String type) {
+	public V1alpha2ClusterBuilderStatusConditions type(String type) {
 
 		this.type = type;
 		return this;
@@ -116,10 +116,10 @@ public class V1alpha2ImageStatusConditions {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		V1alpha2ImageStatusConditions v1alpha2ImageStatusConditions = (V1alpha2ImageStatusConditions) o;
-		return Objects.equals(this.lastTransitionTime, v1alpha2ImageStatusConditions.lastTransitionTime)
-				&& Objects.equals(this.status, v1alpha2ImageStatusConditions.status)
-				&& Objects.equals(this.type, v1alpha2ImageStatusConditions.type);
+		V1alpha2ClusterBuilderStatusConditions v1alpha2ClusterBuilderStatusConditions = (V1alpha2ClusterBuilderStatusConditions) o;
+		return Objects.equals(this.lastTransitionTime, v1alpha2ClusterBuilderStatusConditions.lastTransitionTime)
+				&& Objects.equals(this.status, v1alpha2ClusterBuilderStatusConditions.status)
+				&& Objects.equals(this.type, v1alpha2ClusterBuilderStatusConditions.type);
 	}
 
 	@Override
@@ -130,7 +130,7 @@ public class V1alpha2ImageStatusConditions {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("class V1alpha2ImageStatusConditions {\n");
+		sb.append("class V1alpha2ClusterBuilderStatusConditions {\n");
 		sb.append("    lastTransitionTime: ").append(toIndentedString(lastTransitionTime)).append("\n");
 		sb.append("    status: ").append(toIndentedString(status)).append("\n");
 		sb.append("    type: ").append(toIndentedString(type)).append("\n");

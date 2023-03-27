@@ -13,15 +13,21 @@
 package io.kpack.models;
 
 import java.util.Objects;
-
+import java.util.Arrays;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.io.IOException;
 
 /**
  * V1alpha2ImageSpecCacheVolume
  */
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen",
-		date = "2023-03-26T09:34:39.833Z[Etc/UTC]")
+		date = "2023-03-27T06:32:24.214Z[Etc/UTC]")
 public class V1alpha2ImageSpecCacheVolume {
 
 	public static final String SERIALIZED_NAME_SIZE = "size";

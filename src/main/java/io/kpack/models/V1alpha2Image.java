@@ -30,7 +30,7 @@ import java.io.IOException;
  * V1alpha2Image
  */
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen",
-		date = "2023-03-26T09:34:39.833Z[Etc/UTC]")
+		date = "2023-03-27T06:32:24.214Z[Etc/UTC]")
 public class V1alpha2Image implements io.kubernetes.client.common.KubernetesObject {
 
 	public static final String SERIALIZED_NAME_API_VERSION = "apiVersion";

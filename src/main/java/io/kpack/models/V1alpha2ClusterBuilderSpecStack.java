@@ -24,62 +24,62 @@ import io.swagger.annotations.ApiModelProperty;
 import java.io.IOException;
 
 /**
- * V1alpha2ImageSpecSourceGit
+ * V1alpha2ClusterBuilderSpecStack
  */
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen",
-		date = "2023-03-27T06:32:24.214Z[Etc/UTC]")
-public class V1alpha2ImageSpecSourceGit {
+		date = "2023-03-27T06:34:57.887Z[Etc/UTC]")
+public class V1alpha2ClusterBuilderSpecStack {
 
-	public static final String SERIALIZED_NAME_REVISION = "revision";
+	public static final String SERIALIZED_NAME_KIND = "kind";
 
-	@SerializedName(SERIALIZED_NAME_REVISION)
-	private String revision;
+	@SerializedName(SERIALIZED_NAME_KIND)
+	private String kind;
 
-	public static final String SERIALIZED_NAME_URL = "url";
+	public static final String SERIALIZED_NAME_NAME = "name";
 
-	@SerializedName(SERIALIZED_NAME_URL)
-	private String url;
+	@SerializedName(SERIALIZED_NAME_NAME)
+	private String name;
 
-	public V1alpha2ImageSpecSourceGit revision(String revision) {
+	public V1alpha2ClusterBuilderSpecStack kind(String kind) {
 
-		this.revision = revision;
+		this.kind = kind;
 		return this;
 	}
 
 	/**
-	 * Get revision
-	 * @return revision
+	 * Get kind
+	 * @return kind
 	 **/
 	@javax.annotation.Nullable
 	@ApiModelProperty(value = "")
 
-	public String getRevision() {
-		return revision;
+	public String getKind() {
+		return kind;
 	}
 
-	public void setRevision(String revision) {
-		this.revision = revision;
+	public void setKind(String kind) {
+		this.kind = kind;
 	}
 
-	public V1alpha2ImageSpecSourceGit url(String url) {
+	public V1alpha2ClusterBuilderSpecStack name(String name) {
 
-		this.url = url;
+		this.name = name;
 		return this;
 	}
 
 	/**
-	 * Get url
-	 * @return url
+	 * Get name
+	 * @return name
 	 **/
 	@javax.annotation.Nullable
 	@ApiModelProperty(value = "")
 
-	public String getUrl() {
-		return url;
+	public String getName() {
+		return name;
 	}
 
-	public void setUrl(String url) {
-		this.url = url;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	@Override
@@ -90,22 +90,22 @@ public class V1alpha2ImageSpecSourceGit {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		V1alpha2ImageSpecSourceGit v1alpha2ImageSpecSourceGit = (V1alpha2ImageSpecSourceGit) o;
-		return Objects.equals(this.revision, v1alpha2ImageSpecSourceGit.revision)
-				&& Objects.equals(this.url, v1alpha2ImageSpecSourceGit.url);
+		V1alpha2ClusterBuilderSpecStack v1alpha2ClusterBuilderSpecStack = (V1alpha2ClusterBuilderSpecStack) o;
+		return Objects.equals(this.kind, v1alpha2ClusterBuilderSpecStack.kind)
+				&& Objects.equals(this.name, v1alpha2ClusterBuilderSpecStack.name);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(revision, url);
+		return Objects.hash(kind, name);
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("class V1alpha2ImageSpecSourceGit {\n");
-		sb.append("    revision: ").append(toIndentedString(revision)).append("\n");
-		sb.append("    url: ").append(toIndentedString(url)).append("\n");
+		sb.append("class V1alpha2ClusterBuilderSpecStack {\n");
+		sb.append("    kind: ").append(toIndentedString(kind)).append("\n");
+		sb.append("    name: ").append(toIndentedString(name)).append("\n");
 		sb.append("}");
 		return sb.toString();
 	}

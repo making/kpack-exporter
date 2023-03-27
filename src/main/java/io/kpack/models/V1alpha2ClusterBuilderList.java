@@ -19,7 +19,7 @@ import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import io.kpack.models.V1alpha2Image;
+import io.kpack.models.V1alpha2ClusterBuilder;
 import io.kubernetes.client.openapi.models.V1ListMeta;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -28,12 +28,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * ImageList is a list of Image
+ * ClusterBuilderList is a list of ClusterBuilder
  */
-@ApiModel(description = "ImageList is a list of Image")
+@ApiModel(description = "ClusterBuilderList is a list of ClusterBuilder")
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen",
-		date = "2023-03-27T06:32:24.214Z[Etc/UTC]")
-public class V1alpha2ImageList implements io.kubernetes.client.common.KubernetesListObject {
+		date = "2023-03-27T06:34:57.887Z[Etc/UTC]")
+public class V1alpha2ClusterBuilderList implements io.kubernetes.client.common.KubernetesListObject {
 
 	public static final String SERIALIZED_NAME_API_VERSION = "apiVersion";
 
@@ -43,7 +43,7 @@ public class V1alpha2ImageList implements io.kubernetes.client.common.Kubernetes
 	public static final String SERIALIZED_NAME_ITEMS = "items";
 
 	@SerializedName(SERIALIZED_NAME_ITEMS)
-	private List<V1alpha2Image> items = new ArrayList<>();
+	private List<V1alpha2ClusterBuilder> items = new ArrayList<>();
 
 	public static final String SERIALIZED_NAME_KIND = "kind";
 
@@ -55,7 +55,7 @@ public class V1alpha2ImageList implements io.kubernetes.client.common.Kubernetes
 	@SerializedName(SERIALIZED_NAME_METADATA)
 	private V1ListMeta metadata = null;
 
-	public V1alpha2ImageList apiVersion(String apiVersion) {
+	public V1alpha2ClusterBuilderList apiVersion(String apiVersion) {
 
 		this.apiVersion = apiVersion;
 		return this;
@@ -80,34 +80,34 @@ public class V1alpha2ImageList implements io.kubernetes.client.common.Kubernetes
 		this.apiVersion = apiVersion;
 	}
 
-	public V1alpha2ImageList items(List<V1alpha2Image> items) {
+	public V1alpha2ClusterBuilderList items(List<V1alpha2ClusterBuilder> items) {
 
 		this.items = items;
 		return this;
 	}
 
-	public V1alpha2ImageList addItemsItem(V1alpha2Image itemsItem) {
+	public V1alpha2ClusterBuilderList addItemsItem(V1alpha2ClusterBuilder itemsItem) {
 		this.items.add(itemsItem);
 		return this;
 	}
 
 	/**
-	 * List of images. More info:
+	 * List of clusterbuilders. More info:
 	 * https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md
 	 * @return items
 	 **/
 	@ApiModelProperty(required = true,
-			value = "List of images. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md")
+			value = "List of clusterbuilders. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md")
 
-	public List<V1alpha2Image> getItems() {
+	public List<V1alpha2ClusterBuilder> getItems() {
 		return items;
 	}
 
-	public void setItems(List<V1alpha2Image> items) {
+	public void setItems(List<V1alpha2ClusterBuilder> items) {
 		this.items = items;
 	}
 
-	public V1alpha2ImageList kind(String kind) {
+	public V1alpha2ClusterBuilderList kind(String kind) {
 
 		this.kind = kind;
 		return this;
@@ -132,7 +132,7 @@ public class V1alpha2ImageList implements io.kubernetes.client.common.Kubernetes
 		this.kind = kind;
 	}
 
-	public V1alpha2ImageList metadata(V1ListMeta metadata) {
+	public V1alpha2ClusterBuilderList metadata(V1ListMeta metadata) {
 
 		this.metadata = metadata;
 		return this;
@@ -161,11 +161,11 @@ public class V1alpha2ImageList implements io.kubernetes.client.common.Kubernetes
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		V1alpha2ImageList v1alpha2ImageList = (V1alpha2ImageList) o;
-		return Objects.equals(this.apiVersion, v1alpha2ImageList.apiVersion)
-				&& Objects.equals(this.items, v1alpha2ImageList.items)
-				&& Objects.equals(this.kind, v1alpha2ImageList.kind)
-				&& Objects.equals(this.metadata, v1alpha2ImageList.metadata);
+		V1alpha2ClusterBuilderList v1alpha2ClusterBuilderList = (V1alpha2ClusterBuilderList) o;
+		return Objects.equals(this.apiVersion, v1alpha2ClusterBuilderList.apiVersion)
+				&& Objects.equals(this.items, v1alpha2ClusterBuilderList.items)
+				&& Objects.equals(this.kind, v1alpha2ClusterBuilderList.kind)
+				&& Objects.equals(this.metadata, v1alpha2ClusterBuilderList.metadata);
 	}
 
 	@Override
@@ -176,7 +176,7 @@ public class V1alpha2ImageList implements io.kubernetes.client.common.Kubernetes
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("class V1alpha2ImageList {\n");
+		sb.append("class V1alpha2ClusterBuilderList {\n");
 		sb.append("    apiVersion: ").append(toIndentedString(apiVersion)).append("\n");
 		sb.append("    items: ").append(toIndentedString(items)).append("\n");
 		sb.append("    kind: ").append(toIndentedString(kind)).append("\n");

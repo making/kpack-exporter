@@ -19,67 +19,52 @@ import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import io.kpack.models.V1alpha2ClusterBuilderSpecGroup;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * V1alpha2ImageSpecSourceGit
+ * V1alpha2ClusterBuilderSpecOrder
  */
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen",
-		date = "2023-03-27T06:32:24.214Z[Etc/UTC]")
-public class V1alpha2ImageSpecSourceGit {
+		date = "2023-03-27T06:34:57.887Z[Etc/UTC]")
+public class V1alpha2ClusterBuilderSpecOrder {
 
-	public static final String SERIALIZED_NAME_REVISION = "revision";
+	public static final String SERIALIZED_NAME_GROUP = "group";
 
-	@SerializedName(SERIALIZED_NAME_REVISION)
-	private String revision;
+	@SerializedName(SERIALIZED_NAME_GROUP)
+	private List<V1alpha2ClusterBuilderSpecGroup> group = null;
 
-	public static final String SERIALIZED_NAME_URL = "url";
+	public V1alpha2ClusterBuilderSpecOrder group(List<V1alpha2ClusterBuilderSpecGroup> group) {
 
-	@SerializedName(SERIALIZED_NAME_URL)
-	private String url;
+		this.group = group;
+		return this;
+	}
 
-	public V1alpha2ImageSpecSourceGit revision(String revision) {
-
-		this.revision = revision;
+	public V1alpha2ClusterBuilderSpecOrder addGroupItem(V1alpha2ClusterBuilderSpecGroup groupItem) {
+		if (this.group == null) {
+			this.group = new ArrayList<>();
+		}
+		this.group.add(groupItem);
 		return this;
 	}
 
 	/**
-	 * Get revision
-	 * @return revision
+	 * Get group
+	 * @return group
 	 **/
 	@javax.annotation.Nullable
 	@ApiModelProperty(value = "")
 
-	public String getRevision() {
-		return revision;
+	public List<V1alpha2ClusterBuilderSpecGroup> getGroup() {
+		return group;
 	}
 
-	public void setRevision(String revision) {
-		this.revision = revision;
-	}
-
-	public V1alpha2ImageSpecSourceGit url(String url) {
-
-		this.url = url;
-		return this;
-	}
-
-	/**
-	 * Get url
-	 * @return url
-	 **/
-	@javax.annotation.Nullable
-	@ApiModelProperty(value = "")
-
-	public String getUrl() {
-		return url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
+	public void setGroup(List<V1alpha2ClusterBuilderSpecGroup> group) {
+		this.group = group;
 	}
 
 	@Override
@@ -90,22 +75,20 @@ public class V1alpha2ImageSpecSourceGit {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		V1alpha2ImageSpecSourceGit v1alpha2ImageSpecSourceGit = (V1alpha2ImageSpecSourceGit) o;
-		return Objects.equals(this.revision, v1alpha2ImageSpecSourceGit.revision)
-				&& Objects.equals(this.url, v1alpha2ImageSpecSourceGit.url);
+		V1alpha2ClusterBuilderSpecOrder v1alpha2ClusterBuilderSpecOrder = (V1alpha2ClusterBuilderSpecOrder) o;
+		return Objects.equals(this.group, v1alpha2ClusterBuilderSpecOrder.group);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(revision, url);
+		return Objects.hash(group);
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("class V1alpha2ImageSpecSourceGit {\n");
-		sb.append("    revision: ").append(toIndentedString(revision)).append("\n");
-		sb.append("    url: ").append(toIndentedString(url)).append("\n");
+		sb.append("class V1alpha2ClusterBuilderSpecOrder {\n");
+		sb.append("    group: ").append(toIndentedString(group)).append("\n");
 		sb.append("}");
 		return sb.toString();
 	}
