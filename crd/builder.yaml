@@ -1,0 +1,136 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: builders.kpack.io
+spec:
+  conversion:
+    strategy: Webhook
+    webhook:
+      clientConfig:
+        service:
+          name: kpack-webhook
+          namespace: kpack
+          path: /convert
+          port: 443
+      conversionReviewVersions:
+      - v1
+  group: kpack.io
+  names:
+    categories:
+    - kpack
+    kind: Builder
+    listKind: BuilderList
+    plural: builders
+    shortNames:
+    - bldr
+    - bldrs
+    singular: builder
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .status.latestImage
+      name: LatestImage
+      type: string
+    - jsonPath: .status.conditions[?(@.type=="Ready")].status
+      name: Ready
+      type: string
+    name: v1alpha2
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          apiVersion:
+            type: string
+          kind:
+            type: string
+          spec:
+            type: object
+            properties:
+              order:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    group:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+              serviceAccountName:
+                type: string
+              stack:
+                type: object
+                properties:
+                  kind:
+                    type: string
+                  name:
+                    type: string
+              store:
+                type: object
+                properties:
+                  kind:
+                    type: string
+                  name:
+                    type: string
+              tag:
+                type: string
+          status:
+            type: object
+            properties:
+              builderMetadata:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    homepage:
+                      type: string
+                    id:
+                      type: string
+                    version:
+                      type: string
+              conditions:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    lastTransitionTime:
+                      type: string
+                    status:
+                      type: string
+                    type:
+                      type: string
+              latestImage:
+                type: string
+              observedGeneration:
+                type: integer
+              observedStackGeneration:
+                type: integer
+              observedStoreGeneration:
+                type: integer
+              order:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    group:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          version:
+                            type: string
+              os:
+                type: string
+              stack:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  runImage:
+                    type: string
+    served: true
+    storage: true
