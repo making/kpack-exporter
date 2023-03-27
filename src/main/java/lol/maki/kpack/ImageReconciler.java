@@ -1,12 +1,9 @@
 package lol.maki.kpack;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 import io.kpack.models.V1alpha2Image;
 import io.kpack.models.V1alpha2ImageStatus;
@@ -15,7 +12,7 @@ import io.kubernetes.client.extended.controller.reconciler.Reconciler;
 import io.kubernetes.client.extended.controller.reconciler.Request;
 import io.kubernetes.client.extended.controller.reconciler.Result;
 import io.kubernetes.client.informer.SharedIndexInformer;
-import io.micrometer.core.instrument.Meter.Id;
+import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.Meter.Type;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
@@ -33,7 +30,9 @@ public class ImageReconciler implements Reconciler {
 
 	private final MeterRegistry meterRegistry;
 
-	private final ConcurrentMap<Key, AtomicInteger> metricsMap = new ConcurrentHashMap<>();
+	private final ConcurrentMap<Meter.Id, AtomicInteger> metricsMap = new ConcurrentHashMap<>();
+
+	private static final String METRIC_NAME = "kpack_image_ready";
 
 	public ImageReconciler(SharedIndexInformer<V1alpha2Image> sharedIndexInformer, MeterRegistry meterRegistry) {
 		this.sharedIndexInformer = sharedIndexInformer;
@@ -54,66 +53,50 @@ public class ImageReconciler implements Reconciler {
 		if (imageStatus != null) {
 			final List<V1alpha2ImageStatusConditions> conditions = imageStatus.getConditions();
 			if (conditions != null) {
-				for (V1alpha2ImageStatusConditions condition : conditions) {
-					final String type = condition.getType();
-					if (type == null) {
-						continue;
-					}
-					final String metricName = metricsName(type);
-					final String status = condition.getStatus();
-					if ("Unknown".equalsIgnoreCase(status)) {
-						continue;
-					}
-					final Key key = new Key(namespace, name, metricName);
-					final int value = Boolean.parseBoolean(status) ? 1 : 0;
-					AtomicInteger metricsValue = this.metricsMap.get(key);
-					if (metricsValue == null) {
-						final AtomicInteger newValue = new AtomicInteger(value);
-						final AtomicInteger existing = this.metricsMap.putIfAbsent(key, newValue);
-						if (existing == null) {
-							log.info("Register {}/{} {} {}", namespace, name, type, status);
-							this.meterRegistry.gauge(metricName, labels(namespace, name), newValue);
+				conditions.stream()
+					.filter(c -> "Ready".equalsIgnoreCase(c.getType()))
+					.filter(c -> !"Unknown".equalsIgnoreCase(c.getStatus()))
+					.findAny()
+					.ifPresent(condition -> {
+						final String status = condition.getStatus();
+						final Meter.Id id = id(namespace, name);
+						final int value = Boolean.parseBoolean(status) ? 1 : 0;
+						AtomicInteger metricsValue = this.metricsMap.get(id);
+						if (metricsValue == null) {
+							final AtomicInteger newValue = new AtomicInteger(value);
+							final AtomicInteger existing = this.metricsMap.putIfAbsent(id, newValue);
+							if (existing == null) {
+								log.info("Register {}/{} {}", namespace, name, status);
+								this.meterRegistry.gauge(METRIC_NAME, tags(namespace, name), newValue);
+							}
+							else {
+								metricsValue = existing;
+							}
 						}
-						else {
-							metricsValue = existing;
+						if (metricsValue != null) {
+							if (value != metricsValue.get()) {
+								log.info("Update {}/{} {}", namespace, name, status);
+							}
+							metricsValue.set(value);
 						}
-					}
-					if (metricsValue != null) {
-						if (value != metricsValue.get()) {
-							log.info("Update {}/{} {} {}", namespace, name, type, status);
-						}
-						metricsValue.set(value);
-					}
-				}
+					});
 			}
 		}
 		return new Result(false);
 	}
 
-	static String metricsName(String type) {
-		return "kpack_image_%s".formatted(StringUtils.upperCamelToSnake(type));
-	}
-
 	void removeMetrics(String namespace, String name) {
-		final Set<Key> keys = this.metricsMap.keySet()
-			.stream()
-			.filter(key -> Objects.equals(key.namespace(), namespace) && Objects.equals(key.name(), name))
-			.collect(Collectors.toUnmodifiableSet());
-		keys.forEach(key -> {
-			final Id id = new Id(key.metricName(), key.tags(), null, null, Type.GAUGE);
-			this.meterRegistry.remove(id);
-			this.metricsMap.remove(key);
-		});
+		final Meter.Id id = id(namespace, name);
+		this.meterRegistry.remove(id);
+		this.metricsMap.remove(id);
 	}
 
-	static Tags labels(String namespace, String name) {
+	Meter.Id id(String namespace, String name) {
+		return new Meter.Id(METRIC_NAME, tags(namespace, name), null, null, Type.GAUGE);
+	}
+
+	static Tags tags(String namespace, String name) {
 		return Tags.of("namespace", namespace, "name", name);
-	}
-
-	record Key(String namespace, String name, String metricName) {
-		Tags tags() {
-			return labels(namespace, name);
-		}
 	}
 
 }
