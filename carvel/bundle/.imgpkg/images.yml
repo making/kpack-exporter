@@ -1,0 +1,11 @@
+---
+apiVersion: imgpkg.carvel.dev/v1alpha1
+images:
+- annotations:
+    kbld.carvel.dev/id: ghcr.io/making/kpack-exporter
+    kbld.carvel.dev/origins: |
+      - resolved:
+          tag: latest
+          url: ghcr.io/making/kpack-exporter
+  image: ghcr.io/making/kpack-exporter@sha256:6d369dee41aa5dc94d0f9dc616f384740ba8a8ff4c9737a12eb501389a0d6b1b
+kind: ImagesLock

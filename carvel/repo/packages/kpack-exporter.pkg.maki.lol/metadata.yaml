@@ -1,0 +1,12 @@
+apiVersion: data.packaging.carvel.dev/v1alpha1
+kind: PackageMetadata
+metadata:
+  name: kpack-exporter.pkg.maki.lol
+spec:
+  displayName: kpack-exporter
+  longDescription: kpack-exporter
+  shortDescription: kpack-exporter
+  categories:
+  - kpack
+  - buildpack
+  - prometheus

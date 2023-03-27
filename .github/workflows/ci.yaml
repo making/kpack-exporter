@@ -55,7 +55,7 @@ jobs:
       run: |
         set -e
         ./mvnw -V --no-transfer-progress -Pnative clean spring-boot:build-image -DskipTests -Dspring-boot.build-image.imageName=ghcr.io/making/kpack-exporter
-    - name: Docker Push
+    - name: Docker Login
       if: github.ref == 'refs/heads/main'
       run: |
         set -e
@@ -63,7 +63,27 @@ jobs:
         cat <<EOF > ~/.docker/config.json
         {"auths":{"ghcr.io":{"username":"making","password":"${GITHUB_API_TOKEN}"}}}
         EOF
+    - name: Docker Push
+      if: github.ref == 'refs/heads/main'
+      run: |
+        set -e
         docker push ghcr.io/making/kpack-exporter
+    - name: Set up Carvel Tools
+      if: github.ref == 'refs/heads/main'
+      uses: carvel-dev/setup-action@v1
+    - name: Publish Carvel Package
+      if: github.ref == 'refs/heads/main'
+      run: |
+        set -e
+        VERSION=$(./mvnw org.apache.maven.plugins:maven-help-plugin:3.4.0:evaluate -Dexpression=project.version -q -DforceStdout | sed 's/-SNAPSHOT//')
+        kbld -f carvel/bundle/kpack-exporter.yaml --imgpkg-lock-output carvel/bundle/.imgpkg/images.yml
+        imgpkg push -b ghcr.io/making/kpack-exporter-bundle:${VERSION} -f carvel/bundle
+
+        ytt -f carvel/bundle/values.yaml --data-values-schema-inspect -o openapi-v3 > /tmp/kpack-exporter-schema-openapi.yml
+        ytt -f carvel/template/kpack-exporter.yaml --data-value-file openapi=/tmp/kpack-exporter-schema-openapi.yml -v version=${VERSION} > carvel/repo/packages/kpack-exporter.pkg.maki.lol/${VERSION}.yaml
+
+        kbld -f carvel/repo/packages --imgpkg-lock-output carvel/repo/.imgpkg/images.yml
+        imgpkg push -b ghcr.io/making/kpack-exporter-repo:${VERSION} -f carvel/repo
     - name: Revoke token
       if: always()
       run: |

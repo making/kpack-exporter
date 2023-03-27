@@ -1,0 +1,109 @@
+#@ load("@ytt:data", "data")
+#@ if/end data.values.create_namespace:
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: #@ data.values.namespace
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kpack-exporter
+  namespace: #@ data.values.namespace
+spec:
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+  selector:
+    app.kubernetes.io/part-of: kpack-exporter
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kpack-exporter
+  namespace: #@ data.values.namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/part-of: kpack-exporter
+  template:
+    metadata:
+      metadata:
+        annotations:
+          prometheus.io/path: /actuator/prometheus
+          prometheus.io/port: "8080"
+          prometheus.io/scrape: "true"
+      labels:
+        app.kubernetes.io/part-of: kpack-exporter
+    spec:
+      serviceAccountName: kpack-exporter
+      containers:
+      - name: kpack-exporter
+        image: ghcr.io/making/kpack-exporter
+        env:
+        #@ for i in range(len(data.values.env)):
+        - #@ data.values.env[i]
+        #@ end
+        ports:
+        - name: web
+          containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: 8080
+        livenessProbe:
+          httpGet:
+            path: /actuator/health/liveness
+            port: 8080
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kpack-exporter
+  namespace: #@ data.values.namespace
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kpack-exporter
+rules:
+- apiGroups:
+  - kpack.io
+  resources:
+  - builds
+  - builds/status
+  - builds/finalizers
+  - images
+  - images/status
+  - images/finalizers
+  - builders
+  - builders/status
+  - clusterbuilders
+  - clusterbuilders/status
+  - clusterstores
+  - clusterstores/status
+  - clusterstacks
+  - clusterstacks/status
+  - sourceresolvers
+  - sourceresolvers/status
+  verbs:
+  - get
+  - list
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kpack-exporter
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kpack-exporter
+subjects:
+- kind: ServiceAccount
+  name: kpack-exporter
+  namespace: #@ data.values.namespace

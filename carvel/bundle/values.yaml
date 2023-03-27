@@ -1,0 +1,11 @@
+#@data/values-schema
+---
+#@schema/desc "namespace where kpack-exporter server is installed"
+namespace: kpack-exporter
+#@schema/desc "whether to create the namespace"
+create_namespace: true
+#@schema/desc "Extra env to the code server"
+env:
+#@schema/desc "name and value of an environment variable"
+#@schema/type any=True
+- { }

@@ -1,0 +1,47 @@
+apiVersion: data.packaging.carvel.dev/v1alpha1
+kind: Package
+metadata:
+  name: kpack-exporter.pkg.maki.lol.0.0.1
+spec:
+  refName: kpack-exporter.pkg.maki.lol
+  version: 0.0.1
+  releaseNotes: kpack exporter 0.0.1
+  valuesSchema:
+    openAPIv3:
+      type: object
+      additionalProperties: false
+      properties:
+        namespace:
+          type: string
+          description: namespace where kpack-exporter server is installed
+          default: kpack-exporter
+        create_namespace:
+          type: boolean
+          description: whether to create the namespace
+          default: true
+        env:
+          type: array
+          description: Extra env to the code server
+          items:
+            nullable: true
+            description: name and value of an environment variable
+            default: {}
+          default: []
+  template:
+    spec:
+      fetch:
+      - imgpkgBundle:
+          image: ghcr.io/making/kpack-exporter-bundle:0.0.1
+      template:
+      - ytt: {}
+      - kbld:
+          paths:
+          - '-'
+          - .imgpkg/images.yml
+      deploy:
+      - kapp:
+          rawOptions:
+          - --wait-timeout=5m
+          - --diff-changes=true
+          - --diff-mask=false
+          inspect: {}
