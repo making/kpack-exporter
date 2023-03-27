@@ -23,7 +23,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportRuntimeHints;
 
 @ImportRuntimeHints(NativeHints.class)
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @RegisterReflectionForBinding({ V1alpha2Image.class, V1alpha2ImageList.class, V1alpha2ImageSpec.class,
 		V1alpha2ImageSpecBuild.class, V1alpha2ImageSpecBuildEnv.class, V1alpha2ImageSpecBuildServices.class,
 		V1alpha2ImageSpecCache.class, V1alpha2ImageSpecCacheVolume.class, V1alpha2ImageSpecSource.class,
