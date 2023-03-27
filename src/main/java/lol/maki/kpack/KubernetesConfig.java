@@ -9,7 +9,6 @@ import io.kpack.models.V1alpha2ImageList;
 import io.kubernetes.client.extended.controller.Controller;
 import io.kubernetes.client.extended.controller.builder.ControllerBuilder;
 import io.kubernetes.client.extended.controller.builder.DefaultControllerBuilder;
-import io.kubernetes.client.extended.controller.reconciler.Reconciler;
 import io.kubernetes.client.informer.SharedIndexInformer;
 import io.kubernetes.client.informer.SharedInformerFactory;
 import io.kubernetes.client.openapi.ApiClient;
@@ -35,20 +34,16 @@ public class KubernetesConfig {
 	}
 
 	@Bean(destroyMethod = "shutdown")
-	public Controller imageController(SharedInformerFactory sharedInformerFactory, Reconciler reconciler,
+	public Controller imageController(SharedInformerFactory sharedInformerFactory, ImageReconciler reconciler,
 			SharedIndexInformer<V1alpha2Image> shareIndexInformer) {
-		DefaultControllerBuilder Imageer = ControllerBuilder //
-			.defaultBuilder(sharedInformerFactory)//
-			.watch(queue -> ControllerBuilder //
-				.controllerWatchBuilder(V1alpha2Image.class, queue)//
-				.withResyncPeriod(Duration.ofSeconds(1))//
-				.build()) //
+		final DefaultControllerBuilder builder = ControllerBuilder.defaultBuilder(sharedInformerFactory)
+			.watch(queue -> ControllerBuilder.controllerWatchBuilder(V1alpha2Image.class, queue)
+				.withResyncPeriod(Duration.ofSeconds(1))
+				.build())
 			.withWorkerCount(2);
-		return Imageer//
-			.withReconciler(reconciler) //
-			.withReadyFunc(shareIndexInformer::hasSynced) // optional: only start once
-			// the index is synced
-			.withName("image-controller") ///
+		return builder.withReconciler(reconciler) //
+			.withReadyFunc(shareIndexInformer::hasSynced)
+			.withName("image-controller")
 			.build();
 	}
 

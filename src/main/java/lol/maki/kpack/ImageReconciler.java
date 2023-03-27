@@ -50,28 +50,28 @@ public class ImageReconciler implements Reconciler {
 			this.removeMetrics(namespace, name);
 			return new Result(false);
 		}
-		final V1alpha2ImageStatus status = image.getStatus();
-		if (status != null) {
-			final List<V1alpha2ImageStatusConditions> conditions = status.getConditions();
+		final V1alpha2ImageStatus imageStatus = image.getStatus();
+		if (imageStatus != null) {
+			final List<V1alpha2ImageStatusConditions> conditions = imageStatus.getConditions();
 			if (conditions != null) {
 				for (V1alpha2ImageStatusConditions condition : conditions) {
 					final String type = condition.getType();
 					if (type == null) {
 						continue;
 					}
-					final String metricName = "kpack_image_%s".formatted(StringUtils.upperCamelToSnake(type));
-					final String s = condition.getStatus();
-					if ("Unknown".equalsIgnoreCase(s)) {
+					final String metricName = metricsName(type);
+					final String status = condition.getStatus();
+					if ("Unknown".equalsIgnoreCase(status)) {
 						continue;
 					}
 					final Key key = new Key(namespace, name, metricName);
-					final int value = Boolean.parseBoolean(s) ? 1 : 0;
+					final int value = Boolean.parseBoolean(status) ? 1 : 0;
 					AtomicInteger metricsValue = this.metricsMap.get(key);
 					if (metricsValue == null) {
 						final AtomicInteger newValue = new AtomicInteger(value);
 						final AtomicInteger existing = this.metricsMap.putIfAbsent(key, newValue);
 						if (existing == null) {
-							log.info("Register {}/{} {} {}", namespace, name, type, s);
+							log.info("Register {}/{} {} {}", namespace, name, type, status);
 							this.meterRegistry.gauge(metricName, labels(namespace, name), newValue);
 						}
 						else {
@@ -80,7 +80,7 @@ public class ImageReconciler implements Reconciler {
 					}
 					if (metricsValue != null) {
 						if (value != metricsValue.get()) {
-							log.info("Update {}/{} {} {}", namespace, name, type, s);
+							log.info("Update {}/{} {} {}", namespace, name, type, status);
 						}
 						metricsValue.set(value);
 					}
@@ -88,6 +88,10 @@ public class ImageReconciler implements Reconciler {
 			}
 		}
 		return new Result(false);
+	}
+
+	static String metricsName(String type) {
+		return "kpack_image_%s".formatted(StringUtils.upperCamelToSnake(type));
 	}
 
 	void removeMetrics(String namespace, String name) {
