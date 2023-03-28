@@ -32,11 +32,10 @@ spec:
       app.kubernetes.io/part-of: kpack-exporter
   template:
     metadata:
-      metadata:
-        annotations:
-          prometheus.io/path: /actuator/prometheus
-          prometheus.io/port: "8080"
-          prometheus.io/scrape: "true"
+      annotations:
+        prometheus.io/path: /actuator/prometheus
+        prometheus.io/port: "8080"
+        prometheus.io/scrape: "true"
       labels:
         app.kubernetes.io/part-of: kpack-exporter
     spec:

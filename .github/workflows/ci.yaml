@@ -7,6 +7,7 @@ on:
     - main
     paths:
     - src/**
+    - carvel/**
     - pom.xml
     - .github/workflows/ci.yaml
   pull_request_target:
