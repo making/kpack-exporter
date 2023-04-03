@@ -41,10 +41,14 @@ public class KpackReconciler<ApiType extends KubernetesObject, ResourceStatus, R
 
 	private final Function<ResourceCondition, String> getStatus;
 
+	private final BuiltinAlertSender builtinAlertSender;
+
 	public KpackReconciler(Class<ApiType> clazz, String metricsPrefix, SharedIndexInformer<ApiType> sharedIndexInformer,
 			MeterRegistry meterRegistry, Function<ApiType, ResourceStatus> getResourceStatus,
 			Function<ResourceStatus, List<ResourceCondition>> getConditions,
-			Function<ResourceCondition, String> getType, Function<ResourceCondition, String> getStatus) {
+			Function<ResourceCondition, String> getType, Function<ResourceCondition, String> getStatus,
+			BuiltinAlertSender builtinAlertSender) {
+		this.builtinAlertSender = builtinAlertSender;
 		this.metricName = "%s_%s_ready".formatted(metricsPrefix, lol.maki.kpack.StringUtils
 			.upperCamelToSnake(clazz.getSimpleName().replace("V1alpha1", "").replace("V1alpha2", "")));
 		this.sharedIndexInformer = sharedIndexInformer;
@@ -85,6 +89,9 @@ public class KpackReconciler<ApiType extends KubernetesObject, ResourceStatus, R
 							if (existing == null) {
 								log.info("Register {} {} {}", this.metricName, key, status);
 								this.meterRegistry.gauge(this.metricName, tags(namespace, name), newValue);
+								if (value == 0) {
+									this.builtinAlertSender.sendAlertFailure(this.metricName, key);
+								}
 							}
 							else {
 								metricsValue = existing;
@@ -93,6 +100,12 @@ public class KpackReconciler<ApiType extends KubernetesObject, ResourceStatus, R
 						if (metricsValue != null) {
 							if (value != metricsValue.get()) {
 								log.info("Update {} {} {}", this.metricName, key, status);
+								if (value == 1) {
+									this.builtinAlertSender.sendAlertSuccess(this.metricName, key);
+								}
+								else {
+									this.builtinAlertSender.sendAlertFailure(this.metricName, key);
+								}
 							}
 							metricsValue.set(value);
 						}

@@ -30,7 +30,6 @@ import io.kpack.models.V1alpha2ImageList;
 import io.kpack.models.V1alpha2ImageStatus;
 import io.kpack.models.V1alpha2ImageStatusConditions;
 import io.kubernetes.client.extended.controller.Controller;
-import io.kubernetes.client.extended.controller.DefaultController;
 import io.kubernetes.client.extended.controller.builder.ControllerBuilder;
 import io.kubernetes.client.informer.SharedIndexInformer;
 import io.kubernetes.client.informer.SharedInformerFactory;
@@ -39,10 +38,14 @@ import io.kubernetes.client.util.generic.GenericKubernetesApi;
 import io.micrometer.core.instrument.MeterRegistry;
 
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 @Configuration(proxyBeanMethods = false)
+@EnableConfigurationProperties(BuiltinAlertProps.class)
+@EnableAsync
 public class KubernetesConfig {
 
 	@Bean
@@ -53,13 +56,14 @@ public class KubernetesConfig {
 
 	@Bean(destroyMethod = "shutdown")
 	public Controller imageController(SharedInformerFactory sharedInformerFactory,
-			GenericKubernetesApi<V1alpha2Image, V1alpha2ImageList> api, MeterRegistry meterRegistry) {
+			GenericKubernetesApi<V1alpha2Image, V1alpha2ImageList> api, MeterRegistry meterRegistry,
+			BuiltinAlertSender builtinAlertSender) {
 		final SharedIndexInformer<V1alpha2Image> sharedIndexInformer = sharedInformerFactory.sharedIndexInformerFor(api,
 				V1alpha2Image.class, 0);
 		final KpackReconciler<V1alpha2Image, V1alpha2ImageStatus, V1alpha2ImageStatusConditions> reconciler = new KpackReconciler<>(
 				V1alpha2Image.class, "kpack", sharedIndexInformer, meterRegistry, V1alpha2Image::getStatus,
 				V1alpha2ImageStatus::getConditions, V1alpha2ImageStatusConditions::getType,
-				V1alpha2ImageStatusConditions::getStatus);
+				V1alpha2ImageStatusConditions::getStatus, builtinAlertSender);
 		return ControllerBuilder.defaultBuilder(sharedInformerFactory)
 			.watch(queue -> ControllerBuilder.controllerWatchBuilder(V1alpha2Image.class, queue)
 				.withResyncPeriod(Duration.ofSeconds(1))
@@ -79,13 +83,14 @@ public class KubernetesConfig {
 
 	@Bean(destroyMethod = "shutdown")
 	public Controller builderController(SharedInformerFactory sharedInformerFactory,
-			GenericKubernetesApi<V1alpha2Builder, V1alpha2BuilderList> api, MeterRegistry meterRegistry) {
+			GenericKubernetesApi<V1alpha2Builder, V1alpha2BuilderList> api, MeterRegistry meterRegistry,
+			BuiltinAlertSender builtinAlertSender) {
 		final SharedIndexInformer<V1alpha2Builder> sharedIndexInformer = sharedInformerFactory
 			.sharedIndexInformerFor(api, V1alpha2Builder.class, 0);
 		final KpackReconciler<V1alpha2Builder, V1alpha2BuilderStatus, V1alpha2BuilderStatusConditions> reconciler = new KpackReconciler<>(
 				V1alpha2Builder.class, "kpack", sharedIndexInformer, meterRegistry, V1alpha2Builder::getStatus,
 				V1alpha2BuilderStatus::getConditions, V1alpha2BuilderStatusConditions::getType,
-				V1alpha2BuilderStatusConditions::getStatus);
+				V1alpha2BuilderStatusConditions::getStatus, builtinAlertSender);
 		return ControllerBuilder.defaultBuilder(sharedInformerFactory)
 			.watch(queue -> ControllerBuilder.controllerWatchBuilder(V1alpha2Builder.class, queue)
 				.withResyncPeriod(Duration.ofSeconds(1))
@@ -106,13 +111,15 @@ public class KubernetesConfig {
 
 	@Bean(destroyMethod = "shutdown")
 	public Controller clusterBuilderController(SharedInformerFactory sharedInformerFactory,
-			GenericKubernetesApi<V1alpha2ClusterBuilder, V1alpha2ClusterBuilderList> api, MeterRegistry meterRegistry) {
+			GenericKubernetesApi<V1alpha2ClusterBuilder, V1alpha2ClusterBuilderList> api, MeterRegistry meterRegistry,
+			BuiltinAlertSender builtinAlertSender) {
 		final SharedIndexInformer<V1alpha2ClusterBuilder> sharedIndexInformer = sharedInformerFactory
 			.sharedIndexInformerFor(api, V1alpha2ClusterBuilder.class, 0);
 		final KpackReconciler<V1alpha2ClusterBuilder, V1alpha2ClusterBuilderStatus, V1alpha2ClusterBuilderStatusConditions> reconciler = new KpackReconciler<>(
 				V1alpha2ClusterBuilder.class, "kpack", sharedIndexInformer, meterRegistry,
 				V1alpha2ClusterBuilder::getStatus, V1alpha2ClusterBuilderStatus::getConditions,
-				V1alpha2ClusterBuilderStatusConditions::getType, V1alpha2ClusterBuilderStatusConditions::getStatus);
+				V1alpha2ClusterBuilderStatusConditions::getType, V1alpha2ClusterBuilderStatusConditions::getStatus,
+				builtinAlertSender);
 		return ControllerBuilder.defaultBuilder(sharedInformerFactory)
 			.watch(queue -> ControllerBuilder.controllerWatchBuilder(V1alpha2ClusterBuilder.class, queue)
 				.withResyncPeriod(Duration.ofSeconds(1))
@@ -132,13 +139,15 @@ public class KubernetesConfig {
 
 	@Bean(destroyMethod = "shutdown")
 	public Controller clusterStoreController(SharedInformerFactory sharedInformerFactory,
-			GenericKubernetesApi<V1alpha2ClusterStore, V1alpha2ClusterStoreList> api, MeterRegistry meterRegistry) {
+			GenericKubernetesApi<V1alpha2ClusterStore, V1alpha2ClusterStoreList> api, MeterRegistry meterRegistry,
+			BuiltinAlertSender builtinAlertSender) {
 		final SharedIndexInformer<V1alpha2ClusterStore> sharedIndexInformer = sharedInformerFactory
 			.sharedIndexInformerFor(api, V1alpha2ClusterStore.class, 0);
 		final KpackReconciler<V1alpha2ClusterStore, V1alpha2ClusterStoreStatus, V1alpha2ClusterStoreStatusConditions> reconciler = new KpackReconciler<>(
 				V1alpha2ClusterStore.class, "kpack", sharedIndexInformer, meterRegistry,
 				V1alpha2ClusterStore::getStatus, V1alpha2ClusterStoreStatus::getConditions,
-				V1alpha2ClusterStoreStatusConditions::getType, V1alpha2ClusterStoreStatusConditions::getStatus);
+				V1alpha2ClusterStoreStatusConditions::getType, V1alpha2ClusterStoreStatusConditions::getStatus,
+				builtinAlertSender);
 		return ControllerBuilder.defaultBuilder(sharedInformerFactory)
 			.watch(queue -> ControllerBuilder.controllerWatchBuilder(V1alpha2ClusterStore.class, queue)
 				.withResyncPeriod(Duration.ofSeconds(1))
@@ -158,13 +167,15 @@ public class KubernetesConfig {
 
 	@Bean(destroyMethod = "shutdown")
 	public Controller clusterStackController(SharedInformerFactory sharedInformerFactory,
-			GenericKubernetesApi<V1alpha2ClusterStack, V1alpha2ClusterStackList> api, MeterRegistry meterRegistry) {
+			GenericKubernetesApi<V1alpha2ClusterStack, V1alpha2ClusterStackList> api, MeterRegistry meterRegistry,
+			BuiltinAlertSender builtinAlertSender) {
 		final SharedIndexInformer<V1alpha2ClusterStack> sharedIndexInformer = sharedInformerFactory
 			.sharedIndexInformerFor(api, V1alpha2ClusterStack.class, 0);
 		final KpackReconciler<V1alpha2ClusterStack, V1alpha2ClusterStackStatus, V1alpha2ClusterStackStatusConditions> reconciler = new KpackReconciler<>(
 				V1alpha2ClusterStack.class, "kpack", sharedIndexInformer, meterRegistry,
 				V1alpha2ClusterStack::getStatus, V1alpha2ClusterStackStatus::getConditions,
-				V1alpha2ClusterStackStatusConditions::getType, V1alpha2ClusterStackStatusConditions::getStatus);
+				V1alpha2ClusterStackStatusConditions::getType, V1alpha2ClusterStackStatusConditions::getStatus,
+				builtinAlertSender);
 		return ControllerBuilder.defaultBuilder(sharedInformerFactory)
 			.watch(queue -> ControllerBuilder.controllerWatchBuilder(V1alpha2ClusterStack.class, queue)
 				.withResyncPeriod(Duration.ofSeconds(1))
@@ -187,14 +198,14 @@ public class KubernetesConfig {
 	@Bean(destroyMethod = "shutdown")
 	public Controller tanzuNetDependencyUpdaterController(SharedInformerFactory sharedInformerFactory,
 			GenericKubernetesApi<V1alpha1TanzuNetDependencyUpdater, V1alpha1TanzuNetDependencyUpdaterList> api,
-			MeterRegistry meterRegistry) {
+			MeterRegistry meterRegistry, BuiltinAlertSender builtinAlertSender) {
 		final SharedIndexInformer<V1alpha1TanzuNetDependencyUpdater> sharedIndexInformer = sharedInformerFactory
 			.sharedIndexInformerFor(api, V1alpha1TanzuNetDependencyUpdater.class, 0);
 		final KpackReconciler<V1alpha1TanzuNetDependencyUpdater, V1alpha1TanzuNetDependencyUpdaterStatus, V1alpha1TanzuNetDependencyUpdaterStatusConditions> reconciler = new KpackReconciler<>(
 				V1alpha1TanzuNetDependencyUpdater.class, "buildservice", sharedIndexInformer, meterRegistry,
 				V1alpha1TanzuNetDependencyUpdater::getStatus, V1alpha1TanzuNetDependencyUpdaterStatus::getConditions,
 				V1alpha1TanzuNetDependencyUpdaterStatusConditions::getType,
-				V1alpha1TanzuNetDependencyUpdaterStatusConditions::getStatus);
+				V1alpha1TanzuNetDependencyUpdaterStatusConditions::getStatus, builtinAlertSender);
 		return ControllerBuilder.defaultBuilder(sharedInformerFactory)
 			.watch(queue -> ControllerBuilder.controllerWatchBuilder(V1alpha1TanzuNetDependencyUpdater.class, queue)
 				.withResyncPeriod(Duration.ofSeconds(1))
