@@ -1,0 +1,148 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: tanzunetdependencyupdaters.buildservice.tanzu.vmware.com
+spec:
+  conversion:
+    strategy: None
+  group: buildservice.tanzu.vmware.com
+  names:
+    categories:
+    - buildservice
+    kind: TanzuNetDependencyUpdater
+    listKind: TanzuNetDependencyUpdaterList
+    plural: tanzunetdependencyupdaters
+    shortNames:
+    - dependencyupdater
+    - dependencyupdaters
+    singular: tanzunetdependencyupdater
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .status.latestDescriptorVersion
+      name: DescriptorVersion
+      type: string
+    - jsonPath: .status.latestDescriptorName
+      name: LatestImportedDescriptorName
+      type: string
+    - jsonPath: .status.conditions[?(@.type=="Ready")].status
+      name: Ready
+      type: string
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          apiVersion:
+            type: string
+          kind:
+            type: string
+          spec:
+            type: object
+            properties:
+              checkEvery:
+                type: string
+              descriptorName:
+                type: string
+              inlineDescriptor:
+                type: object
+                properties:
+                  apiVersion:
+                    type: string
+                  clusterBuilders:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        clusterStack:
+                          type: string
+                        clusterStore:
+                          type: string
+                        name:
+                          type: string
+                        order:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              group:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    id:
+                                      type: string
+                  clusterStacks:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        buildImage:
+                          type: object
+                          properties:
+                            image:
+                              type: string
+                        name:
+                          type: string
+                        runImage:
+                          type: object
+                          properties:
+                            image:
+                              type: string
+                  clusterStores:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        sources:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              image:
+                                type: string
+                  defaultClusterBuilder:
+                    type: string
+                  defaultClusterStack:
+                    type: string
+                  kind:
+                    type: string
+                  lifecycle:
+                    type: object
+                    properties:
+                      image:
+                        type: string
+              productSlug:
+                type: string
+              serviceAccountName:
+                type: string
+          status:
+            type: object
+            properties:
+              conditions:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    lastTransitionTime:
+                      type: string
+                    message:
+                      type: string
+                    reason:
+                      type: string
+                    status:
+                      type: string
+                    type:
+                      type: string
+              latestDescriptorName:
+                type: string
+              latestDescriptorVersion:
+                type: string
+              latestInlineDescriptorDigest:
+                type: string
+              observedGeneration:
+                type: integer
+    served: true
+    storage: true

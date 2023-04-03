@@ -5,6 +5,10 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.vmware.tanzu.buildservice.models.V1alpha1TanzuNetDependencyUpdater;
+import com.vmware.tanzu.buildservice.models.V1alpha1TanzuNetDependencyUpdaterList;
+import com.vmware.tanzu.buildservice.models.V1alpha1TanzuNetDependencyUpdaterStatus;
+import com.vmware.tanzu.buildservice.models.V1alpha1TanzuNetDependencyUpdaterStatusConditions;
 import io.kpack.models.V1alpha2Builder;
 import io.kpack.models.V1alpha2BuilderList;
 import io.kpack.models.V1alpha2BuilderStatus;
@@ -26,6 +30,7 @@ import io.kpack.models.V1alpha2ImageList;
 import io.kpack.models.V1alpha2ImageStatus;
 import io.kpack.models.V1alpha2ImageStatusConditions;
 import io.kubernetes.client.extended.controller.Controller;
+import io.kubernetes.client.extended.controller.DefaultController;
 import io.kubernetes.client.extended.controller.builder.ControllerBuilder;
 import io.kubernetes.client.informer.SharedIndexInformer;
 import io.kubernetes.client.informer.SharedInformerFactory;
@@ -52,7 +57,7 @@ public class KubernetesConfig {
 		final SharedIndexInformer<V1alpha2Image> sharedIndexInformer = sharedInformerFactory.sharedIndexInformerFor(api,
 				V1alpha2Image.class, 0);
 		final KpackReconciler<V1alpha2Image, V1alpha2ImageStatus, V1alpha2ImageStatusConditions> reconciler = new KpackReconciler<>(
-				V1alpha2Image.class, sharedIndexInformer, meterRegistry, V1alpha2Image::getStatus,
+				V1alpha2Image.class, "kpack", sharedIndexInformer, meterRegistry, V1alpha2Image::getStatus,
 				V1alpha2ImageStatus::getConditions, V1alpha2ImageStatusConditions::getType,
 				V1alpha2ImageStatusConditions::getStatus);
 		return ControllerBuilder.defaultBuilder(sharedInformerFactory)
@@ -78,7 +83,7 @@ public class KubernetesConfig {
 		final SharedIndexInformer<V1alpha2Builder> sharedIndexInformer = sharedInformerFactory
 			.sharedIndexInformerFor(api, V1alpha2Builder.class, 0);
 		final KpackReconciler<V1alpha2Builder, V1alpha2BuilderStatus, V1alpha2BuilderStatusConditions> reconciler = new KpackReconciler<>(
-				V1alpha2Builder.class, sharedIndexInformer, meterRegistry, V1alpha2Builder::getStatus,
+				V1alpha2Builder.class, "kpack", sharedIndexInformer, meterRegistry, V1alpha2Builder::getStatus,
 				V1alpha2BuilderStatus::getConditions, V1alpha2BuilderStatusConditions::getType,
 				V1alpha2BuilderStatusConditions::getStatus);
 		return ControllerBuilder.defaultBuilder(sharedInformerFactory)
@@ -105,9 +110,9 @@ public class KubernetesConfig {
 		final SharedIndexInformer<V1alpha2ClusterBuilder> sharedIndexInformer = sharedInformerFactory
 			.sharedIndexInformerFor(api, V1alpha2ClusterBuilder.class, 0);
 		final KpackReconciler<V1alpha2ClusterBuilder, V1alpha2ClusterBuilderStatus, V1alpha2ClusterBuilderStatusConditions> reconciler = new KpackReconciler<>(
-				V1alpha2ClusterBuilder.class, sharedIndexInformer, meterRegistry, V1alpha2ClusterBuilder::getStatus,
-				V1alpha2ClusterBuilderStatus::getConditions, V1alpha2ClusterBuilderStatusConditions::getType,
-				V1alpha2ClusterBuilderStatusConditions::getStatus);
+				V1alpha2ClusterBuilder.class, "kpack", sharedIndexInformer, meterRegistry,
+				V1alpha2ClusterBuilder::getStatus, V1alpha2ClusterBuilderStatus::getConditions,
+				V1alpha2ClusterBuilderStatusConditions::getType, V1alpha2ClusterBuilderStatusConditions::getStatus);
 		return ControllerBuilder.defaultBuilder(sharedInformerFactory)
 			.watch(queue -> ControllerBuilder.controllerWatchBuilder(V1alpha2ClusterBuilder.class, queue)
 				.withResyncPeriod(Duration.ofSeconds(1))
@@ -131,9 +136,9 @@ public class KubernetesConfig {
 		final SharedIndexInformer<V1alpha2ClusterStore> sharedIndexInformer = sharedInformerFactory
 			.sharedIndexInformerFor(api, V1alpha2ClusterStore.class, 0);
 		final KpackReconciler<V1alpha2ClusterStore, V1alpha2ClusterStoreStatus, V1alpha2ClusterStoreStatusConditions> reconciler = new KpackReconciler<>(
-				V1alpha2ClusterStore.class, sharedIndexInformer, meterRegistry, V1alpha2ClusterStore::getStatus,
-				V1alpha2ClusterStoreStatus::getConditions, V1alpha2ClusterStoreStatusConditions::getType,
-				V1alpha2ClusterStoreStatusConditions::getStatus);
+				V1alpha2ClusterStore.class, "kpack", sharedIndexInformer, meterRegistry,
+				V1alpha2ClusterStore::getStatus, V1alpha2ClusterStoreStatus::getConditions,
+				V1alpha2ClusterStoreStatusConditions::getType, V1alpha2ClusterStoreStatusConditions::getStatus);
 		return ControllerBuilder.defaultBuilder(sharedInformerFactory)
 			.watch(queue -> ControllerBuilder.controllerWatchBuilder(V1alpha2ClusterStore.class, queue)
 				.withResyncPeriod(Duration.ofSeconds(1))
@@ -157,9 +162,9 @@ public class KubernetesConfig {
 		final SharedIndexInformer<V1alpha2ClusterStack> sharedIndexInformer = sharedInformerFactory
 			.sharedIndexInformerFor(api, V1alpha2ClusterStack.class, 0);
 		final KpackReconciler<V1alpha2ClusterStack, V1alpha2ClusterStackStatus, V1alpha2ClusterStackStatusConditions> reconciler = new KpackReconciler<>(
-				V1alpha2ClusterStack.class, sharedIndexInformer, meterRegistry, V1alpha2ClusterStack::getStatus,
-				V1alpha2ClusterStackStatus::getConditions, V1alpha2ClusterStackStatusConditions::getType,
-				V1alpha2ClusterStackStatusConditions::getStatus);
+				V1alpha2ClusterStack.class, "kpack", sharedIndexInformer, meterRegistry,
+				V1alpha2ClusterStack::getStatus, V1alpha2ClusterStackStatus::getConditions,
+				V1alpha2ClusterStackStatusConditions::getType, V1alpha2ClusterStackStatusConditions::getStatus);
 		return ControllerBuilder.defaultBuilder(sharedInformerFactory)
 			.watch(queue -> ControllerBuilder.controllerWatchBuilder(V1alpha2ClusterStack.class, queue)
 				.withResyncPeriod(Duration.ofSeconds(1))
@@ -168,6 +173,36 @@ public class KubernetesConfig {
 			.withReconciler(reconciler)
 			.withReadyFunc(sharedIndexInformer::hasSynced)
 			.withName("cluster-stack-controller")
+			.build();
+	}
+
+	@Bean
+	public GenericKubernetesApi<V1alpha1TanzuNetDependencyUpdater, V1alpha1TanzuNetDependencyUpdaterList> tanzuNetDependencyUpdaterApi(
+			ApiClient apiClient) {
+		return new GenericKubernetesApi<>(V1alpha1TanzuNetDependencyUpdater.class,
+				V1alpha1TanzuNetDependencyUpdaterList.class, "buildservice.tanzu.vmware.com", "v1alpha1",
+				"tanzunetdependencyupdaters", apiClient);
+	}
+
+	@Bean(destroyMethod = "shutdown")
+	public Controller tanzuNetDependencyUpdaterController(SharedInformerFactory sharedInformerFactory,
+			GenericKubernetesApi<V1alpha1TanzuNetDependencyUpdater, V1alpha1TanzuNetDependencyUpdaterList> api,
+			MeterRegistry meterRegistry) {
+		final SharedIndexInformer<V1alpha1TanzuNetDependencyUpdater> sharedIndexInformer = sharedInformerFactory
+			.sharedIndexInformerFor(api, V1alpha1TanzuNetDependencyUpdater.class, 0);
+		final KpackReconciler<V1alpha1TanzuNetDependencyUpdater, V1alpha1TanzuNetDependencyUpdaterStatus, V1alpha1TanzuNetDependencyUpdaterStatusConditions> reconciler = new KpackReconciler<>(
+				V1alpha1TanzuNetDependencyUpdater.class, "buildservice", sharedIndexInformer, meterRegistry,
+				V1alpha1TanzuNetDependencyUpdater::getStatus, V1alpha1TanzuNetDependencyUpdaterStatus::getConditions,
+				V1alpha1TanzuNetDependencyUpdaterStatusConditions::getType,
+				V1alpha1TanzuNetDependencyUpdaterStatusConditions::getStatus);
+		return ControllerBuilder.defaultBuilder(sharedInformerFactory)
+			.watch(queue -> ControllerBuilder.controllerWatchBuilder(V1alpha1TanzuNetDependencyUpdater.class, queue)
+				.withResyncPeriod(Duration.ofSeconds(1))
+				.build())
+			.withWorkerCount(1)
+			.withReconciler(reconciler)
+			.withReadyFunc(sharedIndexInformer::hasSynced)
+			.withName("tanzu-net-dependency-updater-controller")
 			.build();
 	}
 

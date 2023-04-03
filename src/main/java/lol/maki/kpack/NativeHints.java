@@ -1,5 +1,17 @@
 package lol.maki.kpack;
 
+import com.vmware.tanzu.buildservice.models.V1alpha1TanzuNetDependencyUpdater;
+import com.vmware.tanzu.buildservice.models.V1alpha1TanzuNetDependencyUpdaterList;
+import com.vmware.tanzu.buildservice.models.V1alpha1TanzuNetDependencyUpdaterSpec;
+import com.vmware.tanzu.buildservice.models.V1alpha1TanzuNetDependencyUpdaterSpecInlineDescriptor;
+import com.vmware.tanzu.buildservice.models.V1alpha1TanzuNetDependencyUpdaterSpecInlineDescriptorBuildImage;
+import com.vmware.tanzu.buildservice.models.V1alpha1TanzuNetDependencyUpdaterSpecInlineDescriptorClusterBuilders;
+import com.vmware.tanzu.buildservice.models.V1alpha1TanzuNetDependencyUpdaterSpecInlineDescriptorClusterStacks;
+import com.vmware.tanzu.buildservice.models.V1alpha1TanzuNetDependencyUpdaterSpecInlineDescriptorClusterStores;
+import com.vmware.tanzu.buildservice.models.V1alpha1TanzuNetDependencyUpdaterSpecInlineDescriptorGroup;
+import com.vmware.tanzu.buildservice.models.V1alpha1TanzuNetDependencyUpdaterSpecInlineDescriptorOrder;
+import com.vmware.tanzu.buildservice.models.V1alpha1TanzuNetDependencyUpdaterStatus;
+import com.vmware.tanzu.buildservice.models.V1alpha1TanzuNetDependencyUpdaterStatusConditions;
 import io.kpack.models.*;
 
 import org.springframework.aot.hint.RuntimeHints;
@@ -35,6 +47,15 @@ import org.springframework.context.annotation.ImportRuntimeHints;
 		V1alpha2ClusterStackSpecBuildImage.class, V1alpha2ClusterStackSpecServiceAccountRef.class,
 		V1alpha2ClusterStackStatus.class, V1alpha2ClusterStackStatusBuildImage.class,
 		V1alpha2ClusterStackStatusConditions.class, //
+		V1alpha1TanzuNetDependencyUpdater.class, V1alpha1TanzuNetDependencyUpdaterList.class,
+		V1alpha1TanzuNetDependencyUpdaterSpec.class, V1alpha1TanzuNetDependencyUpdaterSpecInlineDescriptor.class,
+		V1alpha1TanzuNetDependencyUpdaterSpecInlineDescriptorBuildImage.class,
+		V1alpha1TanzuNetDependencyUpdaterSpecInlineDescriptorClusterBuilders.class,
+		V1alpha1TanzuNetDependencyUpdaterSpecInlineDescriptorClusterStacks.class,
+		V1alpha1TanzuNetDependencyUpdaterSpecInlineDescriptorClusterStores.class,
+		V1alpha1TanzuNetDependencyUpdaterSpecInlineDescriptorGroup.class,
+		V1alpha1TanzuNetDependencyUpdaterSpecInlineDescriptorOrder.class, V1alpha1TanzuNetDependencyUpdaterStatus.class,
+		V1alpha1TanzuNetDependencyUpdaterStatusConditions.class, //
 })
 public class NativeHints implements RuntimeHintsRegistrar {
 

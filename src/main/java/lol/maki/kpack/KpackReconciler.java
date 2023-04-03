@@ -41,12 +41,12 @@ public class KpackReconciler<ApiType extends KubernetesObject, ResourceStatus, R
 
 	private final Function<ResourceCondition, String> getStatus;
 
-	public KpackReconciler(Class<ApiType> clazz, SharedIndexInformer<ApiType> sharedIndexInformer,
+	public KpackReconciler(Class<ApiType> clazz, String metricsPrefix, SharedIndexInformer<ApiType> sharedIndexInformer,
 			MeterRegistry meterRegistry, Function<ApiType, ResourceStatus> getResourceStatus,
 			Function<ResourceStatus, List<ResourceCondition>> getConditions,
 			Function<ResourceCondition, String> getType, Function<ResourceCondition, String> getStatus) {
-		this.metricName = "kpack_%s_ready"
-			.formatted(lol.maki.kpack.StringUtils.upperCamelToSnake(clazz.getSimpleName().replace("V1alpha2", "")));
+		this.metricName = "%s_%s_ready".formatted(metricsPrefix, lol.maki.kpack.StringUtils
+			.upperCamelToSnake(clazz.getSimpleName().replace("V1alpha1", "").replace("V1alpha2", "")));
 		this.sharedIndexInformer = sharedIndexInformer;
 		this.meterRegistry = meterRegistry;
 		this.getResourceStatus = getResourceStatus;

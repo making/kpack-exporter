@@ -3,7 +3,12 @@ docker rm -f  kind-control-plane
 set -e
 CURRENT_DIR=$(cd `dirname $0` && pwd)
 LOCAL_MANIFEST_FILE=$(echo "$(cd "$(dirname "$1")"; pwd)/$(basename "$1")")
+PKG=$2
+if [ "${PKG}" == "" ];then
+  PKG=io.kpack
+fi
 echo "CURRENT_DIR=${CURRENT_DIR}"
+echo "PKG=${PKG}"
 echo "LOCAL_MANIFEST_FILE=${LOCAL_MANIFEST_FILE}"
 rm -rf /tmp/java
 mkdir -p /tmp/java
@@ -18,8 +23,8 @@ docker run \
   ghcr.io/kubernetes-client/java/crd-model-gen:v1.0.6 \
   /generate.sh \
   -u $LOCAL_MANIFEST_FILE \
-  -n io.kpack \
-  -p io.kpack \
+  -n ${PKG} \
+  -p ${PKG} \
   -o "$(pwd)"
-mkdir -p ${CURRENT_DIR}/../src/main/java/io/kpack
-cp -r /tmp/java/src/main/java/io/kpack/*  ${CURRENT_DIR}/../src/main/java/io/kpack/
+mkdir -p ${CURRENT_DIR}/../src/main/java/$(echo ${PKG} | sed 's|\.|/|g')
+cp -r /tmp/java/src/main/java/$(echo ${PKG} | sed 's|\.|/|g')/*  ${CURRENT_DIR}/../src/main/java/$(echo ${PKG} | sed 's|\.|/|g')/
