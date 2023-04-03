@@ -8,9 +8,11 @@ public final class BuiltinAlertProps {
 
 	private boolean enabled = false;
 
-	private AlertType type = AlertType.GENERIC;
+	private WebhookType type = WebhookType.GENERIC;
 
 	private String webhookUrl;
+
+	private String cluster;
 
 	@NestedConfigurationProperty
 	private Slack slack = new Slack();
@@ -26,11 +28,11 @@ public final class BuiltinAlertProps {
 		this.enabled = enabled;
 	}
 
-	public AlertType getType() {
+	public WebhookType getType() {
 		return type;
 	}
 
-	public void setType(AlertType type) {
+	public void setType(WebhookType type) {
 		this.type = type;
 	}
 
@@ -58,7 +60,15 @@ public final class BuiltinAlertProps {
 		this.generic = generic;
 	}
 
-	public enum AlertType {
+	public String getCluster() {
+		return cluster;
+	}
+
+	public void setCluster(String cluster) {
+		this.cluster = cluster;
+	}
+
+	public enum WebhookType {
 
 		SLACK, GENERIC
 
@@ -100,7 +110,7 @@ public final class BuiltinAlertProps {
 
 	public static final class Generic {
 
-		private String template = "{\"result\": \"${RESULT}\", \"metrics\": \"${METRICS}\", \"resource\": \"${RESOURCE}\"}";
+		private String template = "{\"result\": \"${RESULT}\", \"type\": \"${TYPE}\", \"namespace\": \"${NAMESPACE}\", \"name\": \"${NAME}\", \"cluster\": \"${CLUSTER}\", \"text\": \"${TEXT}\"}";
 
 		public String getTemplate() {
 			return template;

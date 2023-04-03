@@ -15,6 +15,7 @@ import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.Meter.Type;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
+import lol.maki.kpack.BuiltinAlertSender.AlertType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +32,7 @@ public class KpackReconciler<ApiType extends KubernetesObject, ResourceStatus, R
 
 	private final ConcurrentMap<Meter.Id, AtomicInteger> metricsMap = new ConcurrentHashMap<>();
 
-	private final String metricName;
+	private final String metricsPrefix;
 
 	private final Function<ApiType, ResourceStatus> getResourceStatus;
 
@@ -43,14 +44,16 @@ public class KpackReconciler<ApiType extends KubernetesObject, ResourceStatus, R
 
 	private final BuiltinAlertSender builtinAlertSender;
 
+	private final String resourceType;
+
 	public KpackReconciler(Class<ApiType> clazz, String metricsPrefix, SharedIndexInformer<ApiType> sharedIndexInformer,
 			MeterRegistry meterRegistry, Function<ApiType, ResourceStatus> getResourceStatus,
 			Function<ResourceStatus, List<ResourceCondition>> getConditions,
 			Function<ResourceCondition, String> getType, Function<ResourceCondition, String> getStatus,
 			BuiltinAlertSender builtinAlertSender) {
 		this.builtinAlertSender = builtinAlertSender;
-		this.metricName = "%s_%s_ready".formatted(metricsPrefix, lol.maki.kpack.StringUtils
-			.upperCamelToSnake(clazz.getSimpleName().replace("V1alpha1", "").replace("V1alpha2", "")));
+		this.resourceType = clazz.getSimpleName().replace("V1alpha1", "").replace("V1alpha2", "");
+		this.metricsPrefix = metricsPrefix;
 		this.sharedIndexInformer = sharedIndexInformer;
 		this.meterRegistry = meterRegistry;
 		this.getResourceStatus = getResourceStatus;
@@ -66,7 +69,7 @@ public class KpackReconciler<ApiType extends KubernetesObject, ResourceStatus, R
 		final String key = namespace != null ? namespace + "/" + name : name;
 		final ApiType apiType = this.sharedIndexInformer.getIndexer().getByKey(key);
 		if (apiType == null) {
-			log.info("Remove {} {}", this.metricName, key);
+			log.info("Remove {} {}", this.resourceType, key);
 			this.removeMetrics(namespace, name);
 			return new Result(false);
 		}
@@ -87,10 +90,11 @@ public class KpackReconciler<ApiType extends KubernetesObject, ResourceStatus, R
 							final AtomicInteger newValue = new AtomicInteger(value);
 							final AtomicInteger existing = this.metricsMap.putIfAbsent(id, newValue);
 							if (existing == null) {
-								log.info("Register {} {} {}", this.metricName, key, status);
-								this.meterRegistry.gauge(this.metricName, tags(namespace, name), newValue);
+								log.info("Register {} {} {}", this.resourceType, key, status);
+								this.meterRegistry.gauge(this.metricsName(namespace), tags(namespace, name), newValue);
 								if (value == 0) {
-									this.builtinAlertSender.sendAlertFailure(this.metricName, key);
+									this.builtinAlertSender.sendAlert(AlertType.FAILURE, this.metricsName(namespace),
+											namespace, name);
 								}
 							}
 							else {
@@ -99,12 +103,14 @@ public class KpackReconciler<ApiType extends KubernetesObject, ResourceStatus, R
 						}
 						if (metricsValue != null) {
 							if (value != metricsValue.get()) {
-								log.info("Update {} {} {}", this.metricName, key, status);
+								log.info("Update {} {} {}", this.resourceType, key, status);
 								if (value == 1) {
-									this.builtinAlertSender.sendAlertSuccess(this.metricName, key);
+									this.builtinAlertSender.sendAlert(AlertType.SUCCESS, this.resourceType, namespace,
+											name);
 								}
 								else {
-									this.builtinAlertSender.sendAlertFailure(this.metricName, key);
+									this.builtinAlertSender.sendAlert(AlertType.FAILURE, this.resourceType, namespace,
+											name);
 								}
 							}
 							metricsValue.set(value);
@@ -121,16 +127,20 @@ public class KpackReconciler<ApiType extends KubernetesObject, ResourceStatus, R
 		this.metricsMap.remove(id);
 	}
 
-	Meter.Id id(String namespace, String name) {
-		return new Meter.Id(this.metricName, tags(namespace, name), null, null, Type.GAUGE);
+	String metricsName(String namespace) {
+		return "%s_%sresource_ready".formatted(metricsPrefix, namespace == null ? "cluster" : "");
 	}
 
-	static Tags tags(String namespace, String name) {
+	Meter.Id id(String namespace, String name) {
+		return new Meter.Id(this.metricsName(namespace), tags(namespace, name), null, null, Type.GAUGE);
+	}
+
+	Tags tags(String namespace, String name) {
 		if (StringUtils.hasLength(namespace)) {
-			return Tags.of("namespace", namespace, "name", name);
+			return Tags.of("type", this.resourceType, "namespace", namespace, "name", name);
 		}
 		else {
-			return Tags.of("name", name);
+			return Tags.of("type", this.resourceType, "name", name);
 		}
 	}
 
