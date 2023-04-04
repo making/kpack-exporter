@@ -136,7 +136,7 @@ scrape_configs:
   metrics_path: /actuator/prometheus
 ```
 
-### Alert Rule Config
+#### Alert Rule Config
 
 Here are
 example [alert rule](https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules/)
@@ -274,3 +274,7 @@ or update
 ```
 tanzu package installed update kpack-exporter --values-file kpack-exporter-values.yaml -n ${NAMESPACE}
 ```
+
+### License
+
+Licensed under the Apache License, Version 2.0.
