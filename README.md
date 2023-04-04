@@ -107,6 +107,12 @@ scrape_configs:
     replacement: $1
     action: replace
   - source_labels:
+    - __meta_kubernetes_pod_phase
+    separator: ;
+    regex: Pending|Succeeded|Failed|Completed
+    replacement: $1
+    action: drop
+  - source_labels:
     - __meta_kubernetes_pod_label_app
     separator: ;
     regex: (.*)
@@ -115,9 +121,6 @@ scrape_configs:
     action: replace
   kubernetes_sd_configs:
   - role: pod
-    kubeconfig_file: ""
-    follow_redirects: true
-    enable_http2: true
 ```
 
 Or you can alos simply
