@@ -123,6 +123,8 @@ scrape_configs:
   - role: pod
 ```
 
+> ℹ️ Replace `$` with `$$` if you use OpenTelemetry Collector instead of Prometheus
+
 Or you can alos simply
 use [`static_configs`](https://prometheus.io/docs/prometheus/latest/configuration/configuration/#static_config)
 for example:
