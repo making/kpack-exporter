@@ -47,6 +47,34 @@ spec:
         #@ for i in range(len(data.values.env)):
         - #@ data.values.env[i]
         #@ end
+        #@ if data.values.builtin_alert.enabled:
+        - name: builtin-alert.enabled
+          value: "true"
+        #@ if data.values.builtin_alert.type:
+        - name: builtin-alert.type
+          value: #@ data.values.builtin_alert.type
+        #@ end
+        #@ if data.values.builtin_alert.webhook_url:
+        - name: builtin-alert.webhook-url
+          value: #@ data.values.builtin_alert.webhook_url
+        #@ end
+        #@ if data.values.builtin_alert.cluster:
+        - name: builtin-alert.cluster
+          value: #@ data.values.builtin_alert.cluster
+        #@ end
+        #@ if data.values.builtin_alert.type == "slack" and data.values.builtin_alert.slack.channel:
+        - name: builtin-alert.slack.channel
+          value: #@ data.values.builtin_alert.slack.channel
+        #@ end
+        #@ if data.values.builtin_alert.type == "generic" and data.values.builtin_alert.generic.template:
+        - name: builtin-alert.generic.template
+          value: #@ data.values.builtin_alert.generic.template
+        #@ end
+        #@ if data.values.builtin_alert.debug:
+        - name: logging.level.lol.maki.kpack.BuiltinAlertSender
+          value: debug
+        #@ end
+        #@ end
         ports:
         - name: web
           containerPort: 8080

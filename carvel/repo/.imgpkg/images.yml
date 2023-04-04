@@ -7,5 +7,5 @@ images:
       - resolved:
           tag: 0.0.1
           url: ghcr.io/making/kpack-exporter-bundle:0.0.1
-  image: ghcr.io/making/kpack-exporter-bundle@sha256:3ed253c3b7183280a623b95f654a649cc25223672fdba16be8b07718b5b32c30
+  image: ghcr.io/making/kpack-exporter-bundle@sha256:5647991f57ac187cce871b1350f034bd745190f6cdedc15cd2845c5060d51ed5
 kind: ImagesLock

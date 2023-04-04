@@ -27,6 +27,57 @@ spec:
             description: name and value of an environment variable
             default: {}
           default: []
+        builtin_alert:
+          type: object
+          additionalProperties: false
+          description: Configurations for built-in alert
+          properties:
+            enabled:
+              type: boolean
+              description: whether to enable the built-in alert
+              default: false
+            debug:
+              type: boolean
+              description: whether to enable the debug logs for built-in alert
+              default: false
+            type:
+              type: string
+              description: Webhook type
+              default: slack
+            webhook_url:
+              type: string
+              description: Webhook URL
+              default: ""
+            cluster:
+              type: string
+              description: Cluster name
+              default: ""
+            slack:
+              type: object
+              additionalProperties: false
+              description: Configurations for slack webhook
+              properties:
+                channel:
+                  type: string
+                  description: Slack channel
+                  default: ""
+            generic:
+              type: object
+              additionalProperties: false
+              description: Configurations for generic webhook
+              properties:
+                template:
+                  type: string
+                  description: Template of the payload
+                  default: |-
+                    {
+                      "result": "${RESULT}",
+                      "kind": "${KIND}",
+                      "namespace": "${NAMESPACE}",
+                      "name": "${NAME}",
+                      "cluster": "${CLUSTER}",
+                      "text": "${TEXT}"
+                    }
   template:
     spec:
       fetch:

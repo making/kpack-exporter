@@ -9,3 +9,36 @@ env:
 #@schema/desc "name and value of an environment variable"
 #@schema/type any=True
 - { }
+#@schema/desc "Configurations for built-in alert"
+builtin_alert:
+  #@schema/desc "whether to enable the built-in alert"
+  enabled: false
+  #@schema/desc "whether to enable the debug logs for built-in alert"
+  debug: false
+  #@schema/desc "Webhook type"
+  #@schema/validation one_of=["slack", "generic"]
+  type: slack
+  #@schema/desc "Webhook URL"
+  #@schema/validation min_len=1, when=lambda _, ctx: ctx.parent["enabled"]
+  webhook_url: ""
+  #@schema/desc "Cluster name"
+  #@schema/validation min_len=1, when=lambda _, ctx: ctx.parent["enabled"]
+  cluster: ""
+  #@schema/desc "Configurations for slack webhook"
+  slack:
+    #@schema/desc "Slack channel"
+    #@schema/validation min_len=1, when=lambda _, ctx: ctx.root["builtin_alert"]["enabled"] and ctx.root["builtin_alert"]["type"] == "slack"
+    channel: ""
+  #@schema/desc "Configurations for generic webhook"
+  generic:
+    #@schema/desc "Template of the payload"
+    #@schema/validation min_len=2, when=lambda _, ctx: ctx.root["builtin_alert"]["enabled"] and ctx.root["builtin_alert"]["type"] == "generic"
+    template: |
+      {
+        "result": "${RESULT}",
+        "kind": "${KIND}",
+        "namespace": "${NAMESPACE}",
+        "name": "${NAME}",
+        "cluster": "${CLUSTER}",
+        "text": "${TEXT}"
+      }
