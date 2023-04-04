@@ -34,10 +34,10 @@ public class BuiltinAlertSender {
 	}
 
 	@Async
-	public void sendAlert(AlertType alertType, String resourceType, String namespace, String name) {
+	public void sendAlert(AlertType alertType, String kind, String namespace, String name) {
 		if (this.props.isEnabled()) {
 			alertType.log(logger);
-			final Object payload = buildPayload(alertType, resourceType, namespace, name);
+			final Object payload = buildPayload(alertType, kind, namespace, name);
 			final RequestEntity<?> request = RequestEntity.post(this.props.getWebhookUrl())
 				.contentType(MediaType.APPLICATION_JSON)
 				.body(payload);
@@ -46,22 +46,21 @@ public class BuiltinAlertSender {
 		}
 	}
 
-	Object buildPayload(AlertType alertType, String resourceType, String namespace, String name) {
+	Object buildPayload(AlertType alertType, String kind, String namespace, String name) {
 		return switch (this.props.getType()) {
 			case SLACK -> {
 				final Slack slack = this.props.getSlack();
 				final Map<String, Object> payload = new HashMap<>();
 				payload.put("channel", slack.getChannel());
 				payload.put("blocks", List.of(Map.of("type", "section", "text",
-						Map.of("type", "mrkdwn", "text", alertType.textTemplate().formatted(resourceType)))));
+						Map.of("type", "mrkdwn", "text", alertType.textTemplate().formatted(kind)))));
 				final List<String> text = new ArrayList<>();
-				final List<Map<String, Object>> blocks = new ArrayList<>();
 				if (StringUtils.hasLength(namespace)) {
-					text.add("*Namespace*: `%s`".formatted(namespace));
+					text.add("Namespace: `%s`".formatted(namespace));
 				}
-				text.add("*Name*: `%s`".formatted(name));
+				text.add("Name: `%s`".formatted(name));
 				if (StringUtils.hasLength(this.props.getCluster())) {
-					text.add("*Cluster*: `%s`".formatted(this.props.getCluster()));
+					text.add("Cluster: `%s`".formatted(this.props.getCluster()));
 				}
 				payload.put("attachments", List.of(Map.of("color", alertType.color(), "blocks", List.of(Map.of("type",
 						"section", "text", Map.of("type", "mrkdwn", "text", String.join("\n", text)))))));
@@ -76,11 +75,11 @@ public class BuiltinAlertSender {
 			case GENERIC -> this.props.getGeneric()
 				.getTemplate()
 				.replace("${RESULT}", alertType.name())
-				.replace("${TYPE}", resourceType)
+				.replace("${KIND}", kind)
 				.replace("${NAMESPACE}", namespace)
 				.replace("${NAME}", name)
 				.replace("${CLUSTER}", this.props.getCluster())
-				.replace("${TEXT}", alertType.textTemplate().formatted(resourceType))
+				.replace("${TEXT}", alertType.textTemplate().formatted(kind))
 				.replace("\"null\"", "null");
 		};
 	}

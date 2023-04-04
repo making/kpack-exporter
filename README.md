@@ -15,30 +15,30 @@ kubectl port-forward -n kpack-exporter svc/kpack-exporter 8080:8080
 ```
 $ curl -s http://localhost:8080/actuator/prometheus | grep resource_ready
 
-# HELP buildservice_resource_ready  
-# TYPE buildservice_resource_ready gauge
-buildservice_resource_ready{name="dependency-updater",namespace="build-service",type="TanzuNetDependencyUpdater",} 1.0
-# HELP kpack_resource_ready  
-# TYPE kpack_resource_ready gauge
-kpack_resource_ready{name="hello-api",namespace="hello",type="Image",} 1.0
-kpack_resource_ready{name="demo-api",namespace="demo",type="Image",} 0.0
 # HELP kpack_clusterresource_ready  
 # TYPE kpack_clusterresource_ready gauge
-kpack_clusterresource_ready{name="full-jammy",type="ClusterStack",} 1.0
-kpack_clusterresource_ready{name="full-jammy",type="ClusterBuilder",} 1.0
-kpack_clusterresource_ready{name="tiny",type="ClusterStack",} 1.0
-kpack_clusterresource_ready{name="base-jammy",type="ClusterStack",} 1.0
-kpack_clusterresource_ready{name="base",type="ClusterBuilder",} 1.0
-kpack_clusterresource_ready{name="full",type="ClusterStack",} 1.0
-kpack_clusterresource_ready{name="tiny-jammy",type="ClusterStack",} 1.0
-kpack_clusterresource_ready{name="tiny-jammy",type="ClusterBuilder",} 1.0
-kpack_clusterresource_ready{name="default",type="ClusterBuilder",} 1.0
-kpack_clusterresource_ready{name="full",type="ClusterBuilder",} 1.0
-kpack_clusterresource_ready{name="default",type="ClusterStack",} 1.0
-kpack_clusterresource_ready{name="base",type="ClusterStack",} 1.0
-kpack_clusterresource_ready{name="default",type="ClusterStore",} 1.0
-kpack_clusterresource_ready{name="base-jammy",type="ClusterBuilder",} 1.0
-kpack_clusterresource_ready{name="tiny",type="ClusterBuilder",} 1.0
+kpack_clusterresource_ready{kind="ClusterStack",name="tiny-jammy",} 1.0
+kpack_clusterresource_ready{kind="ClusterStack",name="full",} 1.0
+kpack_clusterresource_ready{kind="ClusterBuilder",name="default",} 1.0
+kpack_clusterresource_ready{kind="ClusterBuilder",name="full-jammy",} 1.0
+kpack_clusterresource_ready{kind="ClusterBuilder",name="full",} 1.0
+kpack_clusterresource_ready{kind="ClusterBuilder",name="tiny",} 1.0
+kpack_clusterresource_ready{kind="ClusterBuilder",name="base-jammy",} 1.0
+kpack_clusterresource_ready{kind="ClusterStack",name="default",} 1.0
+kpack_clusterresource_ready{kind="ClusterBuilder",name="base",} 1.0
+kpack_clusterresource_ready{kind="ClusterStore",name="default",} 1.0
+kpack_clusterresource_ready{kind="ClusterBuilder",name="tiny-jammy",} 1.0
+kpack_clusterresource_ready{kind="ClusterStack",name="base",} 1.0
+kpack_clusterresource_ready{kind="ClusterStack",name="tiny",} 1.0
+kpack_clusterresource_ready{kind="ClusterStack",name="base-jammy",} 1.0
+kpack_clusterresource_ready{kind="ClusterStack",name="full-jammy",} 1.0
+# HELP kpack_resource_ready  
+# TYPE kpack_resource_ready gauge
+kpack_resource_ready{kind="Image",name="demo-api",namespace="demo",} 0.0
+kpack_resource_ready{kind="Image",name="hello-api",namespace="hello",} 1.0
+# HELP buildservice_resource_ready  
+# TYPE buildservice_resource_ready gauge
+buildservice_resource_ready{kind="TanzuNetDependencyUpdater",name="dependency-updater",namespace="build-service",} 1.0
 ```
 
-`xyz_ready` shows `1.0` for normal and `0.0` for abnormal.
+`****resource_ready` shows `1.0` for success and `0.0` for failure.

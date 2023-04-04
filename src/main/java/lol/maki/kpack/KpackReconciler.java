@@ -44,7 +44,7 @@ public class KpackReconciler<ApiType extends KubernetesObject, ResourceStatus, R
 
 	private final BuiltinAlertSender builtinAlertSender;
 
-	private final String resourceType;
+	private final String kind;
 
 	public KpackReconciler(Class<ApiType> clazz, String metricsPrefix, SharedIndexInformer<ApiType> sharedIndexInformer,
 			MeterRegistry meterRegistry, Function<ApiType, ResourceStatus> getResourceStatus,
@@ -52,7 +52,7 @@ public class KpackReconciler<ApiType extends KubernetesObject, ResourceStatus, R
 			Function<ResourceCondition, String> getType, Function<ResourceCondition, String> getStatus,
 			BuiltinAlertSender builtinAlertSender) {
 		this.builtinAlertSender = builtinAlertSender;
-		this.resourceType = clazz.getSimpleName().replace("V1alpha1", "").replace("V1alpha2", "");
+		this.kind = clazz.getSimpleName().replace("V1alpha1", "").replace("V1alpha2", "");
 		this.metricsPrefix = metricsPrefix;
 		this.sharedIndexInformer = sharedIndexInformer;
 		this.meterRegistry = meterRegistry;
@@ -69,7 +69,7 @@ public class KpackReconciler<ApiType extends KubernetesObject, ResourceStatus, R
 		final String key = namespace != null ? namespace + "/" + name : name;
 		final ApiType apiType = this.sharedIndexInformer.getIndexer().getByKey(key);
 		if (apiType == null) {
-			log.info("Remove {} {}", this.resourceType, key);
+			log.info("Remove {} {}", this.kind, key);
 			this.removeMetrics(namespace, name);
 			return new Result(false);
 		}
@@ -90,11 +90,10 @@ public class KpackReconciler<ApiType extends KubernetesObject, ResourceStatus, R
 							final AtomicInteger newValue = new AtomicInteger(value);
 							final AtomicInteger existing = this.metricsMap.putIfAbsent(id, newValue);
 							if (existing == null) {
-								log.info("Register {} {} {}", this.resourceType, key, status);
+								log.info("Register {} {} {}", this.kind, key, status);
 								this.meterRegistry.gauge(this.metricsName(namespace), tags(namespace, name), newValue);
 								if (value == 0) {
-									this.builtinAlertSender.sendAlert(AlertType.FAILURE, this.metricsName(namespace),
-											namespace, name);
+									this.builtinAlertSender.sendAlert(AlertType.FAILURE, this.kind, namespace, name);
 								}
 							}
 							else {
@@ -103,14 +102,12 @@ public class KpackReconciler<ApiType extends KubernetesObject, ResourceStatus, R
 						}
 						if (metricsValue != null) {
 							if (value != metricsValue.get()) {
-								log.info("Update {} {} {}", this.resourceType, key, status);
+								log.info("Update {} {} {}", this.kind, key, status);
 								if (value == 1) {
-									this.builtinAlertSender.sendAlert(AlertType.SUCCESS, this.resourceType, namespace,
-											name);
+									this.builtinAlertSender.sendAlert(AlertType.SUCCESS, this.kind, namespace, name);
 								}
 								else {
-									this.builtinAlertSender.sendAlert(AlertType.FAILURE, this.resourceType, namespace,
-											name);
+									this.builtinAlertSender.sendAlert(AlertType.FAILURE, this.kind, namespace, name);
 								}
 							}
 							metricsValue.set(value);
@@ -137,10 +134,10 @@ public class KpackReconciler<ApiType extends KubernetesObject, ResourceStatus, R
 
 	Tags tags(String namespace, String name) {
 		if (StringUtils.hasLength(namespace)) {
-			return Tags.of("type", this.resourceType, "namespace", namespace, "name", name);
+			return Tags.of("kind", this.kind, "namespace", namespace, "name", name);
 		}
 		else {
-			return Tags.of("type", this.resourceType, "name", name);
+			return Tags.of("kind", this.kind, "name", name);
 		}
 	}
 

@@ -110,7 +110,7 @@ public final class BuiltinAlertProps {
 
 	public static final class Generic {
 
-		private String template = "{\"result\": \"${RESULT}\", \"type\": \"${TYPE}\", \"namespace\": \"${NAMESPACE}\", \"name\": \"${NAME}\", \"cluster\": \"${CLUSTER}\", \"text\": \"${TEXT}\"}";
+		private String template = "{\"result\": \"${RESULT}\", \"kind\": \"${KIND}\", \"namespace\": \"${NAMESPACE}\", \"name\": \"${NAME}\", \"cluster\": \"${CLUSTER}\", \"text\": \"${TEXT}\"}";
 
 		public String getTemplate() {
 			return template;
