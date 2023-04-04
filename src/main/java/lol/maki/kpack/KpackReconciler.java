@@ -15,10 +15,10 @@ import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.Meter.Type;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
-import lol.maki.kpack.BuiltinAlertSender.AlertType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.util.StringUtils;
 
 public class KpackReconciler<ApiType extends KubernetesObject, ResourceStatus, ResourceCondition>
@@ -42,7 +42,7 @@ public class KpackReconciler<ApiType extends KubernetesObject, ResourceStatus, R
 
 	private final Function<ResourceCondition, String> getStatus;
 
-	private final BuiltinAlertSender builtinAlertSender;
+	private final ApplicationEventPublisher eventPublisher;
 
 	private final String kind;
 
@@ -50,8 +50,8 @@ public class KpackReconciler<ApiType extends KubernetesObject, ResourceStatus, R
 			MeterRegistry meterRegistry, Function<ApiType, ResourceStatus> getResourceStatus,
 			Function<ResourceStatus, List<ResourceCondition>> getConditions,
 			Function<ResourceCondition, String> getType, Function<ResourceCondition, String> getStatus,
-			BuiltinAlertSender builtinAlertSender) {
-		this.builtinAlertSender = builtinAlertSender;
+			ApplicationEventPublisher eventPublisher) {
+		this.eventPublisher = eventPublisher;
 		this.kind = clazz.getSimpleName().replace("V1alpha1", "").replace("V1alpha2", "");
 		this.metricsPrefix = metricsPrefix;
 		this.sharedIndexInformer = sharedIndexInformer;
@@ -93,7 +93,8 @@ public class KpackReconciler<ApiType extends KubernetesObject, ResourceStatus, R
 								log.info("Register {} {} {}", this.kind, key, status);
 								this.meterRegistry.gauge(this.metricsName(namespace), tags(namespace, name), newValue);
 								if (value == 0) {
-									this.builtinAlertSender.sendAlert(AlertType.FAILURE, this.kind, namespace, name);
+									this.eventPublisher.publishEvent(
+											new StatusChangedEvent(AlertType.FAILURE, this.kind, namespace, name));
 								}
 							}
 							else {
@@ -104,10 +105,12 @@ public class KpackReconciler<ApiType extends KubernetesObject, ResourceStatus, R
 							if (value != metricsValue.get()) {
 								log.info("Update {} {} {}", this.kind, key, status);
 								if (value == 1) {
-									this.builtinAlertSender.sendAlert(AlertType.SUCCESS, this.kind, namespace, name);
+									this.eventPublisher.publishEvent(
+											new StatusChangedEvent(AlertType.SUCCESS, this.kind, namespace, name));
 								}
 								else {
-									this.builtinAlertSender.sendAlert(AlertType.FAILURE, this.kind, namespace, name);
+									this.eventPublisher.publishEvent(
+											new StatusChangedEvent(AlertType.FAILURE, this.kind, namespace, name));
 								}
 							}
 							metricsValue.set(value);

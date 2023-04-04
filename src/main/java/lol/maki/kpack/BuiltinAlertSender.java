@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 import lol.maki.kpack.BuiltinAlertProps.Slack;
 import org.slf4j.Logger;
@@ -14,7 +13,6 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
@@ -33,7 +31,6 @@ public class BuiltinAlertSender {
 		this.props = props;
 	}
 
-	@Async
 	public void sendAlert(AlertType alertType, String kind, String namespace, String name) {
 		if (this.props.isEnabled()) {
 			alertType.log(logger);
@@ -82,38 +79,6 @@ public class BuiltinAlertSender {
 				.replace("${TEXT}", alertType.textTemplate().formatted(kind))
 				.replace("\"null\"", "null");
 		};
-	}
-
-	enum AlertType {
-
-		SUCCESS(":white_check_mark: *Incident for `%s` resolved*", "#00ff00",
-				logger -> logger.info("Firing alert (Success)")),
-		FAILURE(":rotating_light: *New Incident for `%s`*", "#ff0000", logger -> logger.warn("Firing alert (Failure)"));
-
-		private final String textTemplate;
-
-		private final String color;
-
-		private final Consumer<Logger> log;
-
-		AlertType(String textTemplate, String color, Consumer<Logger> log) {
-			this.textTemplate = textTemplate;
-			this.color = color;
-			this.log = log;
-		}
-
-		public String textTemplate() {
-			return this.textTemplate;
-		}
-
-		public String color() {
-			return this.color;
-		}
-
-		public void log(Logger logger) {
-			this.log.accept(logger);
-		}
-
 	}
 
 }
