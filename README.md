@@ -43,6 +43,8 @@ buildservice_resource_ready{kind="TanzuNetDependencyUpdater",name="dependency-up
 
 `****resource_ready` shows `1.0` for success and `0.0` for failure.
 
+> Run `tanzu package available get kpack-exporter.pkg.maki.lol/0.0.1 --values-schema -n ${NAMESPACE}` to see available configurations
+
 ### Monitoring with Prometheus
 
 #### Scrape Config
