@@ -12,6 +12,22 @@ import com.vmware.tanzu.buildservice.models.V1alpha1TanzuNetDependencyUpdaterSpe
 import com.vmware.tanzu.buildservice.models.V1alpha1TanzuNetDependencyUpdaterSpecInlineDescriptorOrder;
 import com.vmware.tanzu.buildservice.models.V1alpha1TanzuNetDependencyUpdaterStatus;
 import com.vmware.tanzu.buildservice.models.V1alpha1TanzuNetDependencyUpdaterStatusConditions;
+import com.vmware.tanzu.stacksoperator.stacks.models.V1alpha1CustomStack;
+import com.vmware.tanzu.stacksoperator.stacks.models.V1alpha1CustomStackList;
+import com.vmware.tanzu.stacksoperator.stacks.models.V1alpha1CustomStackSpec;
+import com.vmware.tanzu.stacksoperator.stacks.models.V1alpha1CustomStackSpecCaCerts;
+import com.vmware.tanzu.stacksoperator.stacks.models.V1alpha1CustomStackSpecCaCertsBuildRef;
+import com.vmware.tanzu.stacksoperator.stacks.models.V1alpha1CustomStackSpecDestination;
+import com.vmware.tanzu.stacksoperator.stacks.models.V1alpha1CustomStackSpecDestinationBuild;
+import com.vmware.tanzu.stacksoperator.stacks.models.V1alpha1CustomStackSpecDestinationStack;
+import com.vmware.tanzu.stacksoperator.stacks.models.V1alpha1CustomStackSpecMixins;
+import com.vmware.tanzu.stacksoperator.stacks.models.V1alpha1CustomStackSpecSource;
+import com.vmware.tanzu.stacksoperator.stacks.models.V1alpha1CustomStackSpecSourceRegistryImages;
+import com.vmware.tanzu.stacksoperator.stacks.models.V1alpha1CustomStackSpecSourceRegistryImagesBuild;
+import com.vmware.tanzu.stacksoperator.stacks.models.V1alpha1CustomStackSpecSourceStack;
+import com.vmware.tanzu.stacksoperator.stacks.models.V1alpha1CustomStackSpecUser;
+import com.vmware.tanzu.stacksoperator.stacks.models.V1alpha1CustomStackStatus;
+import com.vmware.tanzu.stacksoperator.stacks.models.V1alpha1CustomStackStatusConditions;
 import io.kpack.models.*;
 
 import org.springframework.aot.hint.RuntimeHints;
@@ -56,6 +72,13 @@ import org.springframework.context.annotation.ImportRuntimeHints;
 		V1alpha1TanzuNetDependencyUpdaterSpecInlineDescriptorGroup.class,
 		V1alpha1TanzuNetDependencyUpdaterSpecInlineDescriptorOrder.class, V1alpha1TanzuNetDependencyUpdaterStatus.class,
 		V1alpha1TanzuNetDependencyUpdaterStatusConditions.class, //
+		V1alpha1CustomStack.class, V1alpha1CustomStackList.class, V1alpha1CustomStackSpec.class,
+		V1alpha1CustomStackSpecCaCerts.class, V1alpha1CustomStackSpecCaCertsBuildRef.class,
+		V1alpha1CustomStackSpecDestination.class, V1alpha1CustomStackSpecDestinationBuild.class,
+		V1alpha1CustomStackSpecDestinationStack.class, V1alpha1CustomStackSpecMixins.class,
+		V1alpha1CustomStackSpecSource.class, V1alpha1CustomStackSpecSourceRegistryImages.class,
+		V1alpha1CustomStackSpecSourceRegistryImagesBuild.class, V1alpha1CustomStackSpecSourceStack.class,
+		V1alpha1CustomStackSpecUser.class, V1alpha1CustomStackStatus.class, V1alpha1CustomStackStatusConditions.class, //
 })
 public class NativeHints implements RuntimeHintsRegistrar {
 

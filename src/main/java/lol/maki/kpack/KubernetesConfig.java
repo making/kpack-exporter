@@ -10,6 +10,10 @@ import com.vmware.tanzu.buildservice.models.V1alpha1TanzuNetDependencyUpdater;
 import com.vmware.tanzu.buildservice.models.V1alpha1TanzuNetDependencyUpdaterList;
 import com.vmware.tanzu.buildservice.models.V1alpha1TanzuNetDependencyUpdaterStatus;
 import com.vmware.tanzu.buildservice.models.V1alpha1TanzuNetDependencyUpdaterStatusConditions;
+import com.vmware.tanzu.stacksoperator.stacks.models.V1alpha1CustomStack;
+import com.vmware.tanzu.stacksoperator.stacks.models.V1alpha1CustomStackList;
+import com.vmware.tanzu.stacksoperator.stacks.models.V1alpha1CustomStackStatus;
+import com.vmware.tanzu.stacksoperator.stacks.models.V1alpha1CustomStackStatusConditions;
 import io.kpack.models.V1alpha2Builder;
 import io.kpack.models.V1alpha2BuilderList;
 import io.kpack.models.V1alpha2BuilderStatus;
@@ -218,6 +222,34 @@ public class KubernetesConfig implements AsyncConfigurer {
 			.withReconciler(reconciler)
 			.withReadyFunc(sharedIndexInformer::hasSynced)
 			.withName("tanzu-net-dependency-updater-controller")
+			.build();
+	}
+
+	@Bean
+	public GenericKubernetesApi<V1alpha1CustomStack, V1alpha1CustomStackList> customStackApi(ApiClient apiClient) {
+		return new GenericKubernetesApi<>(V1alpha1CustomStack.class, V1alpha1CustomStackList.class,
+				"stacks.stacks-operator.tanzu.vmware.com", "v1alpha1", "customstacks", apiClient);
+	}
+
+	@Bean(destroyMethod = "shutdown")
+	public Controller customStackController(SharedInformerFactory sharedInformerFactory,
+			GenericKubernetesApi<V1alpha1CustomStack, V1alpha1CustomStackList> api, MeterRegistry meterRegistry,
+			ApplicationEventPublisher eventPublisher) {
+		final SharedIndexInformer<V1alpha1CustomStack> sharedIndexInformer = sharedInformerFactory
+			.sharedIndexInformerFor(api, V1alpha1CustomStack.class, 0);
+		final KpackReconciler<V1alpha1CustomStack, V1alpha1CustomStackStatus, V1alpha1CustomStackStatusConditions> reconciler = new KpackReconciler<>(
+				V1alpha1CustomStack.class, "buildservice", sharedIndexInformer, meterRegistry,
+				V1alpha1CustomStack::getStatus, V1alpha1CustomStackStatus::getConditions,
+				V1alpha1CustomStackStatusConditions::getType, V1alpha1CustomStackStatusConditions::getStatus,
+				eventPublisher);
+		return ControllerBuilder.defaultBuilder(sharedInformerFactory)
+			.watch(queue -> ControllerBuilder.controllerWatchBuilder(V1alpha1CustomStack.class, queue)
+				.withResyncPeriod(Duration.ofSeconds(1))
+				.build())
+			.withWorkerCount(1)
+			.withReconciler(reconciler)
+			.withReadyFunc(sharedIndexInformer::hasSynced)
+			.withName("custom-stack-controller")
 			.build();
 	}
 

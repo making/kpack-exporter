@@ -130,6 +130,15 @@ rules:
   - get
   - list
   - watch
+- apiGroups:
+  - stacks.stacks-operator.tanzu.vmware.com
+  resources:
+  - customstacks
+  - customstacks/status
+  verbs:
+  - get
+  - list
+  - watch
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding

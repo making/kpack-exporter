@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 docker rm -f  kind-control-plane
-set -e
+set -e -o pipefail
 CURRENT_DIR=$(cd `dirname $0` && pwd)
 LOCAL_MANIFEST_FILE=$(echo "$(cd "$(dirname "$1")"; pwd)/$(basename "$1")")
 PKG=$2
@@ -24,7 +24,7 @@ docker run \
   /generate.sh \
   -u $LOCAL_MANIFEST_FILE \
   -n ${PKG} \
-  -p ${PKG} \
+  -p $(echo ${PKG} | sed 's/-//g') \
   -o "$(pwd)"
-mkdir -p ${CURRENT_DIR}/../src/main/java/$(echo ${PKG} | sed 's|\.|/|g')
-cp -r /tmp/java/src/main/java/$(echo ${PKG} | sed 's|\.|/|g')/*  ${CURRENT_DIR}/../src/main/java/$(echo ${PKG} | sed 's|\.|/|g')/
+mkdir -p ${CURRENT_DIR}/../src/main/java/$(echo ${PKG} | sed 's/-//g' | sed 's|\.|/|g')
+cp -r /tmp/java/src/main/java/$(echo ${PKG} | sed 's/-//g' | sed 's|\.|/|g')/*  ${CURRENT_DIR}/../src/main/java/$(echo ${PKG} | sed 's/-//g' | sed 's|\.|/|g')/
